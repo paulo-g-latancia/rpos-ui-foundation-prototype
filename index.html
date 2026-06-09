@@ -110,7 +110,7 @@
       flex-direction: column;
       gap: 4px;
       height: auto;
-      padding: 8px 0;
+      padding: 4px 0 8px;
     }
 
     /* Full logo: fade out when collapsed */
@@ -606,6 +606,30 @@
       transform: translateX(-50%);
     }
 
+    /* ─── Responsive: auto-collapse sidebar below 1024px ─────────── */
+    @media (max-width: 1023px) {
+      .sidebar { width: 56px; }
+      /* Mirror all collapsed-state overrides */
+      .sidebar .sidebar-logo {
+        min-width: 56px;
+        justify-content: center;
+        flex-direction: column;
+        gap: 4px;
+        height: auto;
+        padding: 4px 0 8px;
+      }
+      .sidebar .logo-full   { opacity: 0; max-width: 0; pointer-events: none; }
+      .sidebar .logo-compact { opacity: 1; max-height: 40px; }
+      .sidebar .collapse-btn .ms { transform: rotate(180deg); }
+      .sidebar .section-label    { opacity: 0; max-height: 0; }
+      .sidebar .nav-item         { justify-content: center; padding-left: 0; padding-right: 0; gap: 0; }
+      .sidebar .nav-label        { opacity: 0; flex: 0 0 0; max-width: 0; }
+      .sidebar .badge            { opacity: 0; max-width: 0; padding: 0; min-height: 0; }
+      .sidebar .more-btn         { opacity: 0; max-height: 0; padding: 0; pointer-events: none; }
+      .sidebar .sidebar-bottom   { flex-direction: column; gap: 4px; padding: 8px 0; align-items: center; }
+      .sidebar .bottom-actions   { flex-direction: column; flex: none; gap: 2px; }
+    }
+
     /* ─── Material Symbols helper ─────────────────────────────────── */
     .ms {
       font-family: 'Material Symbols Outlined', sans-serif;
@@ -887,6 +911,19 @@
       btn.dataset.tooltip = isCollapsed ? 'Expand' : 'Collapse';
       hideStip();
     }
+
+    /* ── Responsive auto-collapse ──────────────────────────────────── */
+    const COLLAPSE_BP = 1024;
+    function syncCollapsed() {
+      const sidebar = document.querySelector('.sidebar');
+      const btn     = document.querySelector('.collapse-btn');
+      const shouldCollapse = window.innerWidth < COLLAPSE_BP;
+      sidebar.classList.toggle('collapsed', shouldCollapse);
+      btn.dataset.tooltip = shouldCollapse ? 'Expand' : 'Collapse';
+    }
+    // Run once on load, then on every resize
+    syncCollapsed();
+    window.addEventListener('resize', syncCollapsed);
 
     function setActive(el) {
       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
