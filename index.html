@@ -237,6 +237,21 @@
     }
     .nav-item.active .ms { color: var(--active-text); }
 
+    /* Notification dot — visible only in collapsed state */
+    .nav-dot {
+      display: none;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--error);
+      border: 1.5px solid var(--bg-paper);
+      margin-left: -8px;  /* overlap the icon's top-right corner */
+      margin-top: -12px;
+      flex-shrink: 0;
+      align-self: flex-start;
+    }
+    .sidebar.collapsed .nav-dot { display: block; }
+
     .nav-label {
       font-size: 14px;
       font-weight: 400;
@@ -626,6 +641,7 @@
       .sidebar .nav-item         { justify-content: center; padding-left: 0; padding-right: 0; gap: 0; }
       .sidebar .nav-label        { opacity: 0; flex: 0 0 0; max-width: 0; }
       .sidebar .badge            { opacity: 0; max-width: 0; padding: 0; min-height: 0; }
+      .sidebar .nav-dot          { display: block; }
       .sidebar .more-btn         { opacity: 0; max-height: 0; padding: 0; pointer-events: none; }
       .sidebar .sidebar-bottom   { flex-direction: column; gap: 4px; padding: 8px 0; align-items: center; }
       .sidebar .bottom-actions   { flex-direction: column; flex: none; gap: 2px; }
@@ -697,7 +713,7 @@
       </div>
       <div class="nav-item" data-nav-tooltip="Restrictions" onclick="setActive(this)">
         <div class="nav-accent"></div>
-        <span class="ms">lock_clock</span>
+        <span class="ms">lock_clock</span><span class="nav-dot"></span>
         <span class="nav-label">Restrictions</span>
         <span class="badge">1</span>
       </div>
@@ -757,7 +773,7 @@
       </div>
       <div class="nav-item" data-nav-tooltip="Groups" onclick="setActive(this)">
         <div class="nav-accent"></div>
-        <span class="ms">groups</span>
+        <span class="ms">groups</span><span class="nav-dot"></span>
         <span class="nav-label">Groups</span>
         <span class="badge">1</span>
       </div>
