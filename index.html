@@ -99,12 +99,12 @@
       min-width: 224px; /* prevent logo from squishing during transition */
     }
 
-    /* Collapsed logo row: center the compact logo + collapse btn */
+    /* Collapsed logo row: stack compact logo above expand button */
     .sidebar.collapsed .sidebar-logo {
       min-width: 56px;
       justify-content: center;
-      flex-direction: column-reverse;
-      gap: 0;
+      flex-direction: column;
+      gap: 4px;
       height: auto;
       padding: 8px 0;
     }
@@ -191,6 +191,8 @@
       display: flex;
       align-items: center;
       gap: 12px;
+      /* left: 2px accent (absolute) + 12px gap = 14px indent before icon */
+      padding-left: 14px;
       padding-right: 16px;
       cursor: pointer;
       position: relative;
@@ -204,9 +206,9 @@
     /* Collapsed: center the icon */
     .sidebar.collapsed .nav-item {
       justify-content: center;
+      padding-left: 0;
       padding-right: 0;
       gap: 0;
-      height: 36px;
     }
 
     .nav-accent {
