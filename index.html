@@ -929,6 +929,8 @@
     function setActive(el) {
       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
       el.classList.add('active');
+      const label = el.querySelector('.nav-label');
+      if (label) document.querySelector('.page-title').textContent = label.textContent.trim();
     }
   </script>
 </body>
