@@ -891,9 +891,27 @@
       el.addEventListener('mouseleave', hideStip);
     });
 
-    // All sidebar icon-btns (collapse btn + bottom actions) — always
-    document.querySelectorAll('.sidebar .icon-btn[data-tooltip]').forEach(el => {
+    // Collapse button — always to the right
+    document.querySelectorAll('.sidebar .collapse-btn[data-tooltip]').forEach(el => {
       el.addEventListener('mouseenter', () => showStip(el, el.dataset.tooltip));
+      el.addEventListener('mouseleave', hideStip);
+    });
+
+    // Bottom action buttons — above when expanded, right when collapsed
+    document.querySelectorAll('.bottom-actions .icon-btn[data-tooltip]').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        const collapsed = document.querySelector('.sidebar').classList.contains('collapsed');
+        if (collapsed) {
+          showStip(el, el.dataset.tooltip);
+        } else {
+          const r = el.getBoundingClientRect();
+          stip.textContent = el.dataset.tooltip;
+          stip.style.left      = (r.left + r.width / 2) + 'px';
+          stip.style.top       = (r.top - 8) + 'px';
+          stip.style.transform = 'translate(-50%, -100%)';
+          stip.style.opacity   = '1';
+        }
+      });
       el.addEventListener('mouseleave', hideStip);
     });
 
