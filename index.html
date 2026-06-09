@@ -29,6 +29,9 @@
       --label-bg:          #ffffff;
       --hover-overlay:     rgba(0, 0, 0, 0.04);
       --icon-color:        rgba(0, 0, 0, 0.54);
+      --logo-text:         #1a1a1a;
+      --logo-mark-a:       #007873;
+      --logo-mark-b:       #00b5a9;
     }
 
     [data-theme="dark"] {
@@ -51,6 +54,9 @@
       --label-bg:          #121212;
       --hover-overlay:     rgba(255, 255, 255, 0.08);
       --icon-color:        rgba(255, 255, 255, 0.56);
+      --logo-text:         #ffffff;
+      --logo-mark-a:       #a5ef19;
+      --logo-mark-b:       #7fcb00;
     }
 
     /* ─── Reset ───────────────────────────────────────────────────── */
@@ -93,7 +99,11 @@
       flex-shrink: 0;
     }
 
-    .logo-img { height: 24px; width: 112px; display: block; object-fit: contain; }
+    .duetto-logo {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
 
     /* Icon buttons */
     .icon-btn {
@@ -261,12 +271,13 @@
       transition: background 0.2s;
     }
 
-    /* Top bar */
+    /* Top bar — explicit 56px to match sidebar logo row */
     .topbar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 8px 16px;
+      height: 56px;
+      padding: 0 16px;
       background: var(--topbar-bg);
       border-bottom: 1px solid var(--border);
       flex-shrink: 0;
@@ -463,13 +474,18 @@
 
     <!-- Logo row -->
     <div class="sidebar-logo">
-      <div>
-        <img
-          class="logo-img"
-          id="logo-img"
-          src="https://www.figma.com/api/mcp/asset/d7384675-8348-4f54-bbed-1afb785ba642"
-          alt="Duetto"
-        >
+      <div class="duetto-logo" aria-label="Duetto">
+        <!-- Mark -->
+        <svg width="26" height="24" viewBox="0 0 26 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="11" height="11" rx="2" fill="var(--logo-mark-a)"/>
+          <rect x="13" width="11" height="11" rx="2" fill="var(--logo-mark-b)"/>
+          <rect y="13" width="11" height="11" rx="2" fill="var(--logo-mark-b)"/>
+          <rect x="13" y="13" width="11" height="11" rx="2" fill="var(--logo-mark-a)" fill-opacity="0.4"/>
+        </svg>
+        <!-- Wordmark -->
+        <svg width="72" height="16" viewBox="0 0 72 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <text x="0" y="13" font-family="Lato, sans-serif" font-weight="700" font-size="15" letter-spacing="0.5" fill="var(--logo-text)">duetto</text>
+        </svg>
       </div>
       <button class="icon-btn" title="Collapse sidebar">
         <span class="ms" style="font-size:20px">keyboard_double_arrow_left</span>
@@ -646,14 +662,10 @@
   </div>
 
   <script>
-    const LIGHT_LOGO = 'https://www.figma.com/api/mcp/asset/d7384675-8348-4f54-bbed-1afb785ba642';
-    const DARK_LOGO  = 'https://www.figma.com/api/mcp/asset/e707e3b1-0123-4b4e-b9cc-1354d2497759';
-
     function toggleTheme() {
       const isDark = document.body.dataset.theme === 'dark';
       document.body.dataset.theme = isDark ? 'light' : 'dark';
       document.getElementById('theme-icon').textContent = isDark ? 'dark_mode' : 'light_mode';
-      document.getElementById('logo-img').src = isDark ? LIGHT_LOGO : DARK_LOGO;
     }
 
     function setActive(el) {
