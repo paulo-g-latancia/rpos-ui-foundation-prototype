@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RPOS UI Foundation Prototype</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20,400,1,0&display=swap" rel="stylesheet">
+  <style>
+    /* ─── Design tokens ───────────────────────────────────────────── */
+    :root {
+      --bg-paper:          #ffffff;
+      --bg-default:        #ffffff;
+      --sidebar-bg:        rgba(0, 0, 0, 0.04);
+      --topbar-bg:         rgba(0, 0, 0, 0.04);
+      --border:            rgba(0, 0, 0, 0.12);
+      --input-border:      rgba(0, 0, 0, 0.23);
+      --text-primary:      rgba(0, 0, 0, 0.87);
+      --text-secondary:    rgba(0, 0, 0, 0.60);
+      --active-bg:         rgba(0, 120, 115, 0.08);
+      --active-accent:     #005c58;
+      --active-text:       #005c58;
+      --primary:           #007873;
+      --primary-contrast:  #ffffff;
+      --error:             #dd393d;
+      --error-contrast:    #ffffff;
+      --success:           #3e9447;
+      --label-bg:          #ffffff;
+      --hover-overlay:     rgba(0, 0, 0, 0.04);
+      --icon-color:        rgba(0, 0, 0, 0.54);
+    }
+
+    [data-theme="dark"] {
+      --bg-paper:          #121212;
+      --bg-default:        #121212;
+      --sidebar-bg:        rgba(255, 255, 255, 0.08);
+      --topbar-bg:         rgba(255, 255, 255, 0.08);
+      --border:            rgba(255, 255, 255, 0.12);
+      --input-border:      rgba(255, 255, 255, 0.23);
+      --text-primary:      #ffffff;
+      --text-secondary:    rgba(255, 255, 255, 0.70);
+      --active-bg:         rgba(163, 222, 217, 0.16);
+      --active-accent:     #7fcb00;
+      --active-text:       #7fcb00;
+      --primary:           #a5ef19;
+      --primary-contrast:  rgba(0, 0, 0, 0.87);
+      --error:             #ffb4ad;
+      --error-contrast:    rgba(0, 0, 0, 0.87);
+      --success:           #b2dfb3;
+      --label-bg:          #121212;
+      --hover-overlay:     rgba(255, 255, 255, 0.08);
+      --icon-color:        rgba(255, 255, 255, 0.56);
+    }
+
+    /* ─── Reset ───────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    button { font-family: 'Lato', sans-serif; cursor: pointer; }
+
+    /* ─── Shell ───────────────────────────────────────────────────── */
+    html, body { height: 100%; }
+
+    body {
+      font-family: 'Lato', sans-serif;
+      background: var(--bg-paper);
+      color: var(--text-primary);
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    /* ─── Sidebar ─────────────────────────────────────────────────── */
+    .sidebar {
+      width: 224px;
+      flex-shrink: 0;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--border);
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    /* Logo row */
+    .sidebar-logo {
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 8px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .logo-img { height: 24px; width: 112px; display: block; object-fit: contain; }
+
+    /* Icon buttons */
+    .icon-btn {
+      width: 30px;
+      height: 30px;
+      border: none;
+      background: transparent;
+      border-radius: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--icon-color);
+      transition: background 0.15s;
+    }
+    .icon-btn:hover { background: var(--hover-overlay); }
+    .icon-btn .ms { font-size: 20px; color: var(--icon-color); }
+
+    /* Nav sections */
+    .nav-section { display: flex; flex-direction: column; flex-shrink: 0; padding-top: 4px; }
+    .nav-section.grow { flex: 1 0 0; min-height: 0; }
+
+    .section-label {
+      padding: 0 10px;
+      font-size: 12px;
+      font-weight: 400;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      line-height: 32px;
+    }
+
+    /* Nav items */
+    .nav-item {
+      height: 32px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-right: 16px;
+      cursor: pointer;
+      transition: background 0.1s;
+      user-select: none;
+    }
+    .nav-item:hover { background: var(--hover-overlay); }
+    .nav-item.active { background: var(--active-bg); }
+
+    .nav-accent {
+      width: 2px;
+      height: 20px;
+      border-radius: 0 2px 2px 0;
+      flex-shrink: 0;
+      background: transparent;
+    }
+    .nav-item.active .nav-accent { background: var(--active-accent); }
+
+    .nav-item .ms {
+      font-size: 20px;
+      color: var(--text-secondary);
+      flex-shrink: 0;
+    }
+    .nav-item.active .ms { color: var(--active-text); }
+
+    .nav-label {
+      flex: 1;
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--text-secondary);
+      letter-spacing: 0.17px;
+      line-height: 1.43;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .nav-item.active .nav-label { color: var(--active-text); }
+
+    /* Badge chip */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--error);
+      color: var(--error-contrast);
+      border-radius: 100px;
+      padding: 0 6px;
+      font-size: 13px;
+      font-weight: 400;
+      letter-spacing: 0.16px;
+      line-height: 18px;
+      min-height: 18px;
+      flex-shrink: 0;
+    }
+
+    /* "N more" expand button */
+    .more-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: 41px;
+      padding: 4px 5px;
+      border: none;
+      background: transparent;
+      border-radius: 4px;
+      color: var(--text-primary);
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.46px;
+      line-height: 22px;
+      transition: background 0.15s;
+    }
+    .more-btn:hover { background: var(--hover-overlay); }
+    .more-btn .ms { font-size: 18px; color: var(--text-primary); }
+
+    /* Bottom bar */
+    .sidebar-bottom {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 4px 8px;
+      border-top: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .avatar-wrap { position: relative; cursor: pointer; flex-shrink: 0; }
+    .avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 100px;
+      object-fit: cover;
+      display: block;
+      background: #bdbdbd;
+    }
+    /* Placeholder avatar initials */
+    .avatar-placeholder {
+      width: 24px;
+      height: 24px;
+      border-radius: 100px;
+      background: #9c6644;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .avatar-dot {
+      position: absolute;
+      bottom: -3px;
+      right: -3px;
+      width: 10px;
+      height: 10px;
+      border-radius: 100px;
+      background: var(--success);
+      border: 2px solid var(--bg-paper);
+    }
+
+    .bottom-actions { display: flex; align-items: center; gap: 4px; flex: 1; justify-content: flex-end; }
+
+    /* ─── Main area ───────────────────────────────────────────────── */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      height: 100%;
+      background: var(--bg-paper);
+      transition: background 0.2s;
+    }
+
+    /* Top bar */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 16px;
+      background: var(--topbar-bg);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      gap: 16px;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .topbar-pickers { display: flex; gap: 16px; align-items: center; flex: 1; }
+
+    /* Select field */
+    .select-wrap {
+      position: relative;
+      width: 320px;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+    .select-inner {
+      display: flex;
+      align-items: center;
+      padding: 8px 14px;
+      border: 1px solid var(--input-border);
+      border-radius: 4px;
+      background: transparent;
+      transition: border-color 0.15s;
+    }
+    .select-wrap:hover .select-inner { border-color: var(--text-primary); }
+    .select-label {
+      position: absolute;
+      top: 0;
+      left: 9px;
+      transform: translateY(-50%);
+      background: var(--label-bg);
+      padding: 0 4px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      letter-spacing: 0.15px;
+      line-height: 1;
+      pointer-events: none;
+      white-space: nowrap;
+      transition: background 0.2s, color 0.2s;
+    }
+    .select-start { font-size: 24px; color: var(--text-secondary); margin-right: 8px; flex-shrink: 0; }
+    .select-value {
+      flex: 1;
+      font-size: 16px;
+      color: var(--text-primary);
+      letter-spacing: 0.15px;
+      line-height: 24px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .select-arrow { font-size: 24px; color: var(--text-secondary); margin-left: 8px; flex-shrink: 0; }
+
+    /* Topbar icon buttons (24px icons) */
+    .topbar-actions { display: flex; align-items: center; gap: 16px; }
+
+    .icon-btn-lg {
+      position: relative;
+      width: 34px;
+      height: 34px;
+      border: none;
+      background: transparent;
+      border-radius: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--icon-color);
+      transition: background 0.15s;
+    }
+    .icon-btn-lg:hover { background: var(--hover-overlay); }
+    .icon-btn-lg .ms { font-size: 24px; color: var(--icon-color); }
+
+    .btn-badge {
+      position: absolute;
+      top: -10px;
+      left: 14px;
+      background: var(--error);
+      color: var(--error-contrast);
+      border-radius: 100px;
+      padding: 0 5px;
+      font-size: 12px;
+      font-weight: 400;
+      letter-spacing: 0.16px;
+      line-height: 18px;
+      min-height: 18px;
+      pointer-events: none;
+    }
+
+    /* ─── Page content ────────────────────────────────────────────── */
+    .page-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .page-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 8px 16px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-default);
+      flex-shrink: 0;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .page-title {
+      flex: 1;
+      font-size: 24px;
+      font-weight: 400;
+      color: var(--text-primary);
+      line-height: 1.334;
+    }
+
+    /* Text buttons */
+    .btn-text {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 8px;
+      border: none;
+      background: transparent;
+      border-radius: 4px;
+      color: var(--primary);
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.4px;
+      line-height: 24px;
+      white-space: nowrap;
+      transition: background 0.15s;
+    }
+    .btn-text:hover { background: rgba(0, 120, 115, 0.08); }
+    [data-theme="dark"] .btn-text:hover { background: rgba(165, 239, 25, 0.08); }
+    .btn-text .ms { font-size: 20px; color: var(--primary); }
+
+    /* Contained / filled button */
+    .btn-contained {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border: none;
+      background: var(--primary);
+      color: var(--primary-contrast);
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.4px;
+      line-height: 24px;
+      white-space: nowrap;
+      box-shadow: 0px 1px 5px rgba(0,0,0,.12), 0px 2px 2px rgba(0,0,0,.14), 0px 3px 1px -2px rgba(0,0,0,.20);
+      transition: filter 0.15s;
+    }
+    .btn-contained:hover { filter: brightness(0.92); }
+    .btn-contained .ms { font-size: 20px; color: var(--primary-contrast); }
+
+    /* Page body (empty for now) */
+    .page-body {
+      flex: 1;
+      background: var(--bg-paper);
+      transition: background 0.2s;
+    }
+
+    /* ─── Material Symbols helper ─────────────────────────────────── */
+    .ms {
+      font-family: 'Material Symbols Outlined', sans-serif;
+      font-weight: normal;
+      font-style: normal;
+      font-size: 24px;
+      line-height: 1;
+      letter-spacing: normal;
+      text-transform: none;
+      display: inline-block;
+      white-space: nowrap;
+      word-wrap: normal;
+      direction: ltr;
+      -webkit-font-feature-settings: 'liga';
+      font-feature-settings: 'liga';
+      -webkit-font-smoothing: antialiased;
+      user-select: none;
+    }
+    /* Filled variant via font variation */
+    .ms-filled {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+    }
+  </style>
+</head>
+<body data-theme="light">
+
+  <!-- ── Sidebar ─────────────────────────────────────────────────── -->
+  <aside class="sidebar">
+
+    <!-- Logo row -->
+    <div class="sidebar-logo">
+      <div>
+        <img
+          class="logo-img"
+          id="logo-img"
+          src="https://www.figma.com/api/mcp/asset/d7384675-8348-4f54-bbed-1afb785ba642"
+          alt="Duetto"
+        >
+      </div>
+      <button class="icon-btn" title="Collapse sidebar">
+        <span class="ms" style="font-size:20px">keyboard_double_arrow_left</span>
+      </button>
+    </div>
+
+    <!-- Home -->
+    <div class="nav-item" onclick="setActive(this)">
+      <div class="nav-accent"></div>
+      <span class="ms">home</span>
+      <span class="nav-label">Home</span>
+    </div>
+
+    <!-- Rates & Pricing -->
+    <div class="nav-section">
+      <div class="section-label">Rates &amp; Pricing</div>
+      <div class="nav-item active" onclick="setActive(this)">
+        <div class="nav-accent"></div>
+        <span class="ms">price_change</span>
+        <span class="nav-label">Manage Rates</span>
+      </div>
+      <div class="nav-item" onclick="setActive(this)">
+        <div class="nav-accent"></div>
+        <span class="ms">lock_clock</span>
+        <span class="nav-label">Restrictions</span>
+        <span class="badge">1</span>
+      </div>
+      <button class="more-btn">
+        14 more <span class="ms" style="font-size:18px">expand_more</span>
+      </button>
+    </div>
+
+    <!-- Strategy -->
+    <div class="nav-section">
+      <div class="section-label">Strategy</div>
+      <div class="nav-item" onclick="setActive(this)">
+        <div class="nav-accent"></div>
+        <span class="ms">local_offer</span>
+        <span class="nav-label">Pricing Strategy</span>
+      </div>
+      <div class="nav-item" onclick="setActive(this)">
+        <div class="nav-accent"></div>
+        <span class="ms">airplanemode_active</span>
+        <span class="nav-label">Autopilot</span>
+      </div>
+      <button class="more-btn">
+        7 more <span class="ms" style="font-size:18px">expand_more</span>
+      </button>
+    </div>
+
+    <!-- Reports -->
+    <div class="nav-section">
+      <div class="section-label">Reports</div>
+      <div class="nav-item" onclick="setActive(this)">
+        <div class="nav-accent"></div>
+        <span class="ms">addchart</span>
+        <span class="nav-label">Custom Reports</span>
+      </div>
+      <div class="nav-item" onclick="setActive(this)">
+        <div class="nav-accent"></div>
+        <span class="ms">hotel</span>
+        <span class="nav-label">Occupancy</span>
+      </div>
+      <div class="nav-item" onclick="setActive(this)">
+        <div class="nav-accent"></div>
+        <span class="ms">today</span>
+        <span class="nav-label">Daily Pace</span>
+      </div>
+      <button class="more-btn">
+        8 more <span class="ms" style="font-size:18px">expand_more</span>
+      </button>
+    </div>
+
+    <!-- Forecasts & Groups (grows to fill space) -->
+    <div class="nav-section grow">
+      <div class="section-label">Forecasts &amp; Groups</div>
+      <div class="nav-item" onclick="setActive(this)">
+        <div class="nav-accent"></div>
+        <span class="ms">work</span>
+        <span class="nav-label">Forecasts &amp; Budgets</span>
+      </div>
+      <div class="nav-item" onclick="setActive(this)">
+        <div class="nav-accent"></div>
+        <span class="ms">groups</span>
+        <span class="nav-label">Groups</span>
+        <span class="badge">1</span>
+      </div>
+      <button class="more-btn">
+        3 more <span class="ms" style="font-size:18px">expand_more</span>
+      </button>
+    </div>
+
+    <!-- Bottom bar -->
+    <div class="sidebar-bottom">
+      <div class="avatar-wrap">
+        <div class="avatar-placeholder">KL</div>
+        <div class="avatar-dot"></div>
+      </div>
+      <div class="bottom-actions">
+        <button class="icon-btn" title="Settings">
+          <span class="ms" style="font-size:20px">settings</span>
+        </button>
+        <button class="icon-btn" title="Help">
+          <span class="ms" style="font-size:20px">help_outline</span>
+        </button>
+        <button class="icon-btn" id="theme-btn" title="Toggle dark mode" onclick="toggleTheme()">
+          <span class="ms" id="theme-icon" style="font-size:20px">dark_mode</span>
+        </button>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- ── Main ────────────────────────────────────────────────────── -->
+  <div class="main">
+
+    <!-- Top bar -->
+    <div class="topbar">
+      <div class="topbar-pickers">
+
+        <!-- Property selector -->
+        <div class="select-wrap" onclick="this.querySelector('.select-inner').style.borderColor='var(--active-accent)'">
+          <div class="select-inner">
+            <span class="ms ms-filled select-start" style="font-size:24px">apartment</span>
+            <span class="select-value">Karina City Centre Hotel</span>
+            <span class="ms ms-filled select-arrow">arrow_drop_down</span>
+          </div>
+          <span class="select-label">Property</span>
+        </div>
+
+        <!-- Stay dates selector -->
+        <div class="select-wrap">
+          <div class="select-inner">
+            <span class="ms ms-filled select-start" style="font-size:24px">calendar_today</span>
+            <span class="select-value">Next 30 days</span>
+            <span class="ms ms-filled select-arrow">arrow_drop_down</span>
+          </div>
+          <span class="select-label">Stay Dates</span>
+        </div>
+
+      </div>
+
+      <div class="topbar-actions">
+        <button class="icon-btn-lg" title="Calendar">
+          <span class="ms">calendar_today</span>
+        </button>
+        <button class="icon-btn-lg" title="AI Suggestions" style="position:relative">
+          <span class="ms ms-filled">auto_awesome</span>
+          <span class="btn-badge">1</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Page content -->
+    <div class="page-wrap">
+      <div class="page-header">
+        <h1 class="page-title">Manage Rates</h1>
+        <button class="btn-text">
+          <span class="ms">table_chart</span>
+          Table Settings
+        </button>
+        <button class="btn-text">
+          <span class="ms">cached</span>
+          Optimize
+        </button>
+        <button class="btn-contained">
+          <span class="ms">publish</span>
+          Publish
+        </button>
+      </div>
+      <div class="page-body"></div>
+    </div>
+
+  </div>
+
+  <script>
+    const LIGHT_LOGO = 'https://www.figma.com/api/mcp/asset/d7384675-8348-4f54-bbed-1afb785ba642';
+    const DARK_LOGO  = 'https://www.figma.com/api/mcp/asset/e707e3b1-0123-4b4e-b9cc-1354d2497759';
+
+    function toggleTheme() {
+      const isDark = document.body.dataset.theme === 'dark';
+      document.body.dataset.theme = isDark ? 'light' : 'dark';
+      document.getElementById('theme-icon').textContent = isDark ? 'dark_mode' : 'light_mode';
+      document.getElementById('logo-img').src = isDark ? LIGHT_LOGO : DARK_LOGO;
+    }
+
+    function setActive(el) {
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      el.classList.add('active');
+    }
+  </script>
+</body>
+</html>
