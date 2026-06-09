@@ -110,7 +110,7 @@
       flex-direction: column;
       gap: 4px;
       height: auto;
-      padding: 4px 0 8px;
+      padding: 2px 0 8px;
     }
 
     /* Full logo: fade out when collapsed */
@@ -125,6 +125,7 @@
     .sidebar.collapsed .logo-full {
       opacity: 0;
       max-width: 0;
+      max-height: 0;  /* collapse height so it doesn't add top gap in column layout */
       pointer-events: none;
     }
 
@@ -616,9 +617,9 @@
         flex-direction: column;
         gap: 4px;
         height: auto;
-        padding: 4px 0 8px;
+        padding: 2px 0 8px;
       }
-      .sidebar .logo-full   { opacity: 0; max-width: 0; pointer-events: none; }
+      .sidebar .logo-full   { opacity: 0; max-width: 0; max-height: 0; pointer-events: none; }
       .sidebar .logo-compact { opacity: 1; max-height: 40px; }
       .sidebar .collapse-btn .ms { transform: rotate(180deg); }
       .sidebar .section-label    { opacity: 0; max-height: 0; }
