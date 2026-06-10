@@ -75,6 +75,8 @@
     /* ─── Sidebar ─────────────────────────────────────────────────── */
     .sidebar {
       width: 224px;
+      min-width: 160px;
+      max-width: 320px;
       flex-shrink: 0;
       height: 100%;
       display: flex;
@@ -83,9 +85,30 @@
       border-right: 1px solid var(--border);
       transition: width 0.25s ease, background 0.2s, border-color 0.2s;
       overflow: hidden; /* clips nav text during width animation */
+      position: relative;
     }
 
-    .sidebar.collapsed { width: 56px; }
+    /* Disable width transition while user is dragging */
+    .sidebar.resizing { transition: background 0.2s, border-color 0.2s; }
+
+    .sidebar.collapsed { width: 56px !important; min-width: 56px; }
+
+    /* Drag handle on the right edge */
+    .sidebar-resizer {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 4px;
+      height: 100%;
+      cursor: ew-resize;
+      z-index: 20;
+      background: transparent;
+      transition: background 0.15s;
+    }
+    .sidebar-resizer:hover,
+    .sidebar-resizer.dragging { background: var(--primary); opacity: 0.5; }
+    /* Hide resizer when collapsed — nothing to resize */
+    .sidebar.collapsed .sidebar-resizer { display: none; }
 
     /* Suppress ALL CSS ::after tooltips inside sidebar —
        JS fixed-position tooltip handles them instead */
@@ -346,38 +369,8 @@
       align-items: center;
     }
 
-    .avatar-wrap { position: relative; cursor: pointer; flex-shrink: 0; }
-    .avatar {
-      width: 24px;
-      height: 24px;
-      border-radius: 100px;
-      object-fit: cover;
-      display: block;
-      background: #bdbdbd;
-    }
-    /* Placeholder avatar initials */
-    .avatar-placeholder {
-      width: 24px;
-      height: 24px;
-      border-radius: 100px;
-      background: #9c6644;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 10px;
-      font-weight: 700;
-      color: #fff;
-    }
-    .avatar-dot {
-      position: absolute;
-      bottom: -3px;
-      right: -3px;
-      width: 10px;
-      height: 10px;
-      border-radius: 100px;
-      background: var(--success);
-      border: 2px solid var(--bg-paper);
-    }
+    /* Logout button lives at the left of the bottom bar */
+    .logout-btn { flex-shrink: 0; }
 
     .bottom-actions {
       display: flex;
@@ -782,12 +775,14 @@
       </button>
     </div>
 
+    <!-- Resize handle -->
+    <div class="sidebar-resizer" id="sidebar-resizer"></div>
+
     <!-- Bottom bar -->
     <div class="sidebar-bottom">
-      <div class="avatar-wrap">
-        <div class="avatar-placeholder">KL</div>
-        <div class="avatar-dot"></div>
-      </div>
+      <button class="icon-btn logout-btn" data-tooltip="Log Out">
+        <span class="ms" style="font-size:20px">logout</span>
+      </button>
       <div class="bottom-actions">
         <button class="icon-btn" data-tooltip="Settings" data-tooltip-pos="top">
           <span class="ms" style="font-size:20px">settings</span>
@@ -848,16 +843,12 @@
       <div class="page-header">
         <h1 class="page-title">Manage Rates</h1>
         <button class="btn-text">
-          <span class="ms">table_chart</span>
-          Table Settings
-        </button>
-        <button class="btn-text">
-          <span class="ms">cached</span>
-          Optimize
+          <span class="ms">tune</span>
+          Secondary Action
         </button>
         <button class="btn-contained">
-          <span class="ms">publish</span>
-          Publish
+          <span class="ms">bolt</span>
+          Primary Action
         </button>
       </div>
       <div class="page-body"></div>
@@ -913,8 +904,9 @@
       el.addEventListener('mouseleave', hideStip);
     });
 
+    // Logout button — above when expanded, right when collapsed
     // Bottom action buttons — above when expanded, right when collapsed
-    document.querySelectorAll('.bottom-actions .icon-btn[data-tooltip]').forEach(el => {
+    function wireBottomTip(el) {
       el.addEventListener('mouseenter', () => {
         const collapsed = document.querySelector('.sidebar').classList.contains('collapsed');
         if (collapsed) {
@@ -929,6 +921,40 @@
         }
       });
       el.addEventListener('mouseleave', hideStip);
+    }
+    document.querySelectorAll('.sidebar-bottom .icon-btn[data-tooltip]').forEach(wireBottomTip);
+
+    /* ── Sidebar resize ────────────────────────────────────────────── */
+    const sidebar    = document.querySelector('.sidebar');
+    const resizer    = document.getElementById('sidebar-resizer');
+    const MIN_W = 160, MAX_W = 320;
+    let isResizing = false, resizeStartX, resizeStartW;
+
+    resizer.addEventListener('mousedown', e => {
+      if (sidebar.classList.contains('collapsed')) return;
+      isResizing   = true;
+      resizeStartX = e.clientX;
+      resizeStartW = sidebar.offsetWidth;
+      sidebar.classList.add('resizing');
+      resizer.classList.add('dragging');
+      document.body.style.cursor     = 'ew-resize';
+      document.body.style.userSelect = 'none';
+      e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', e => {
+      if (!isResizing) return;
+      const w = Math.min(MAX_W, Math.max(MIN_W, resizeStartW + e.clientX - resizeStartX));
+      sidebar.style.width = w + 'px';
+    });
+
+    document.addEventListener('mouseup', () => {
+      if (!isResizing) return;
+      isResizing = false;
+      sidebar.classList.remove('resizing');
+      resizer.classList.remove('dragging');
+      document.body.style.cursor     = '';
+      document.body.style.userSelect = '';
     });
 
     /* ── Actions ─────────────────────────────────────────────────── */
@@ -940,9 +966,9 @@
     }
 
     function toggleSidebar() {
-      const sidebar = document.querySelector('.sidebar');
-      const btn     = document.querySelector('.collapse-btn');
+      const btn = document.querySelector('.collapse-btn');
       const isCollapsed = sidebar.classList.toggle('collapsed');
+      if (isCollapsed) sidebar.style.width = ''; // reset any manual resize
       btn.dataset.tooltip = isCollapsed ? 'Expand' : 'Collapse';
       hideStip();
     }
@@ -950,13 +976,12 @@
     /* ── Responsive auto-collapse ──────────────────────────────────── */
     const COLLAPSE_BP = 1024;
     function syncCollapsed() {
-      const sidebar = document.querySelector('.sidebar');
-      const btn     = document.querySelector('.collapse-btn');
+      const btn = document.querySelector('.collapse-btn');
       const shouldCollapse = window.innerWidth < COLLAPSE_BP;
+      if (shouldCollapse) sidebar.style.width = ''; // reset manual resize on collapse
       sidebar.classList.toggle('collapsed', shouldCollapse);
       btn.dataset.tooltip = shouldCollapse ? 'Expand' : 'Collapse';
     }
-    // Run once on load, then on every resize
     syncCollapsed();
     window.addEventListener('resize', syncCollapsed);
 
