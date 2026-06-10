@@ -1210,9 +1210,44 @@
       }
     }
 
+    /* ── Surfaced more-panel item ────────────────────────────────── */
+    let surfacedItem = null; // { key, item, navEl }
+
+    function removeSurfacedItem() {
+      if (!surfacedItem) return;
+      surfacedItem.navEl.remove();
+      surfacedItem = null;
+    }
+
     function selectMoreItem(el, label) {
-      document.querySelector('.page-title').textContent = label;
-      showAlert(label);
+      // Find the item data
+      let foundKey = null, foundItem = null;
+      for (const [key, items] of Object.entries(MORE_ITEMS)) {
+        const item = items.find(i => i.label === label);
+        if (item) { foundKey = key; foundItem = item; break; }
+      }
+
+      // Remove any previously surfaced item before creating a new one
+      removeSurfacedItem();
+
+      if (foundKey && foundItem) {
+        const btn = document.querySelector(`.more-btn[data-more="${foundKey}"]`);
+        const navEl = document.createElement('div');
+        navEl.className = 'nav-item surfaced-more-item';
+        navEl.setAttribute('data-nav-tooltip', label);
+        navEl.innerHTML = `
+          <div class="nav-accent"></div>
+          <span class="ms">${foundItem.icon}</span>
+          ${foundItem.badge ? '<span class="nav-dot"></span>' : ''}
+          <span class="nav-label">${label}</span>
+          ${foundItem.badge ? `<span class="badge">${foundItem.badge}</span>` : ''}
+        `;
+        navEl.addEventListener('click', () => setActive(navEl));
+        btn.parentElement.insertBefore(navEl, btn);
+        surfacedItem = { key: foundKey, item: foundItem, navEl };
+        setActive(navEl);
+      }
+
       closeMorePanel();
     }
 
@@ -1354,6 +1389,10 @@
     window.addEventListener('resize', syncCollapsed);
 
     function setActive(el) {
+      // Remove surfaced item if navigating away from it
+      if (surfacedItem && surfacedItem.navEl !== el) {
+        removeSurfacedItem();
+      }
       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
       el.classList.add('active');
       const label = el.querySelector('.nav-label');
