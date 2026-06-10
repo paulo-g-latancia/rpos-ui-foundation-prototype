@@ -527,6 +527,57 @@
       line-height: 1.334;
     }
 
+    /* Page alert banner */
+    .page-alert {
+      display: none;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 16px;
+      background: rgba(211, 47, 47, 0.08);
+      border-bottom: 1px solid rgba(211, 47, 47, 0.2);
+      flex-shrink: 0;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    [data-theme="dark"] .page-alert {
+      background: rgba(211, 47, 47, 0.28);
+      border-bottom-color: rgba(211, 47, 47, 0.4);
+    }
+    .page-alert.visible { display: flex; }
+    .page-alert-icon {
+      font-size: 20px;
+      color: var(--error);
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .page-alert-body { flex: 1; min-width: 0; }
+    .page-alert-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-primary);
+      line-height: 1.5;
+    }
+    .page-alert-list {
+      margin: 4px 0 0 16px;
+      padding: 0;
+      font-size: 14px;
+      color: var(--text-primary);
+      line-height: 1.6;
+    }
+    .page-alert-action {
+      flex-shrink: 0;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--active-text);
+      padding: 2px 4px;
+      border-radius: 4px;
+      white-space: nowrap;
+      transition: background 0.15s;
+    }
+    .page-alert-action:hover { background: var(--hover-overlay); }
+
     /* Text buttons */
     .btn-text {
       display: inline-flex;
@@ -932,6 +983,14 @@
           Primary Action
         </button>
       </div>
+      <div class="page-alert" id="page-alert">
+        <span class="ms page-alert-icon">error</span>
+        <div class="page-alert-body">
+          <div class="page-alert-title" id="alert-title"></div>
+          <ul class="page-alert-list" id="alert-list"></ul>
+        </div>
+        <button class="page-alert-action" onclick="markAsRead()">Mark as Read</button>
+      </div>
       <div class="page-body"></div>
     </div>
 
@@ -1033,8 +1092,91 @@
       activeMoreBtn = null;
     }
 
+    /* ── Notification alerts ─────────────────────────────────────── */
+    const NOTIFICATIONS = {
+      'Advance': [
+        'Rate recommendations pending approval for 3 properties',
+        'Autopilot override detected on Peak Season dates',
+      ],
+      'Strategy Hub': [
+        'Strategy rule conflict detected for Q3 shoulder dates',
+      ],
+      'Group Wash': [
+        '1 group block exceeds wash threshold — review recommended',
+      ],
+      'Overbooking': [
+        '3 room types are above overbooking limits for next weekend',
+        'Overbooking policy not set for Room Type DLX',
+        'Historical wash rate data missing for Suite category',
+      ],
+      'Events': [
+        'New city-wide event detected — Jul 4 weekend',
+      ],
+      'Dashboards': [
+        'Dashboard data refresh failed for 2 properties',
+        'New benchmark data available — update your comparisons',
+      ],
+      'Lost Business': [
+        'Lost business rate increased 12% vs prior month',
+      ],
+    };
+
+    const pageAlert    = document.getElementById('page-alert');
+    const alertTitle   = document.getElementById('alert-title');
+    const alertList    = document.getElementById('alert-list');
+
+    // Track which label is currently active in the alert (for mark-as-read targeting)
+    let activeAlertLabel = null;
+
+    function showAlert(label) {
+      const notes = NOTIFICATIONS[label];
+      if (!notes || notes.length === 0) { hideAlert(); return; }
+      activeAlertLabel = label;
+      const count = notes.length;
+      alertTitle.textContent = `${count} item${count > 1 ? 's' : ''} require${count === 1 ? 's' : ''} your attention:`;
+      alertList.innerHTML = notes.map(n => `<li>${n}</li>`).join('');
+      pageAlert.classList.add('visible');
+    }
+
+    function hideAlert() {
+      pageAlert.classList.remove('visible');
+      activeAlertLabel = null;
+    }
+
+    function markAsRead() {
+      const label = activeAlertLabel;
+      hideAlert();
+      if (!label) return;
+
+      // Remove badge + nav-dot from a visible nav-item matching this label
+      document.querySelectorAll('.nav-item').forEach(item => {
+        const navLabel = item.querySelector('.nav-label');
+        if (navLabel && navLabel.textContent.trim() === label) {
+          const badge = item.querySelector('.badge');
+          const dot   = item.querySelector('.nav-dot');
+          if (badge) badge.remove();
+          if (dot)   dot.remove();
+        }
+      });
+
+      // Remove badge from MORE_ITEMS data and update any more-btn dots
+      for (const key of Object.keys(MORE_ITEMS)) {
+        const item = MORE_ITEMS[key].find(i => i.label === label);
+        if (item && item.badge) {
+          delete item.badge;
+          // Remove dot from the corresponding more-btn if no badged items remain
+          const btn = document.querySelector(`.more-btn[data-more="${key}"]`);
+          if (btn && !MORE_ITEMS[key].some(i => i.badge)) {
+            const dot = btn.querySelector('.more-btn-dot');
+            if (dot) dot.remove();
+          }
+        }
+      }
+    }
+
     function selectMoreItem(el, label) {
       document.querySelector('.page-title').textContent = label;
+      showAlert(label);
       closeMorePanel();
     }
 
@@ -1179,7 +1321,9 @@
       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
       el.classList.add('active');
       const label = el.querySelector('.nav-label');
-      if (label) document.querySelector('.page-title').textContent = label.textContent.trim();
+      const labelText = label ? label.textContent.trim() : '';
+      if (labelText) document.querySelector('.page-title').textContent = labelText;
+      showAlert(labelText);
     }
   </script>
 </body>
