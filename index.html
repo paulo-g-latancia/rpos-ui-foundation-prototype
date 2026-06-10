@@ -352,6 +352,7 @@
     .more-btn:hover { background: var(--hover-overlay); }
     .more-btn .ms { font-size: 18px; color: var(--text-primary); }
     .sidebar.collapsed .more-btn { opacity: 0; max-height: 0; padding: 0; pointer-events: none; }
+    .more-btn-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--error); border: 1.5px solid var(--bg-paper); flex-shrink: 0; margin-left: 2px; }
 
     /* Nav item tooltips handled by JS (#stip) — no CSS pseudo-element needed */
 
@@ -686,6 +687,21 @@
       letter-spacing: 0.17px;
       overflow: hidden;
       text-overflow: ellipsis;
+      flex: 1;
+    }
+    .more-panel-item .more-panel-badge {
+      flex-shrink: 0;
+      min-width: 18px;
+      height: 18px;
+      border-radius: 9px;
+      background: var(--error);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 5px;
     }
 
     /* ─── Material Symbols helper ─────────────────────────────────── */
@@ -771,7 +787,7 @@
         <span class="nav-label">Strategy Hub</span>
         <span class="badge">1</span>
       </div>
-      <button class="more-btn" onclick="toggleMorePanel(this, 'pricing')">
+      <button class="more-btn" data-more="pricing" onclick="toggleMorePanel(this, 'pricing')">
         11 more <span class="ms" style="font-size:18px">chevron_right</span>
       </button>
     </div>
@@ -809,7 +825,7 @@
         <span class="ms">today</span>
         <span class="nav-label">Daily Pace</span>
       </div>
-      <button class="more-btn" onclick="toggleMorePanel(this, 'reports')">
+      <button class="more-btn" data-more="reports" onclick="toggleMorePanel(this, 'reports')">
         20 more <span class="ms" style="font-size:18px">chevron_right</span>
       </button>
     </div>
@@ -828,7 +844,7 @@
         <span class="nav-label">Group Wash</span>
         <span class="badge">1</span>
       </div>
-      <button class="more-btn" onclick="toggleMorePanel(this, 'groups')">
+      <button class="more-btn" data-more="groups" onclick="toggleMorePanel(this, 'groups')">
         3 more <span class="ms" style="font-size:18px">chevron_right</span>
       </button>
     </div>
@@ -930,9 +946,9 @@
       pricing: [
         { icon: 'king_bed',           label: 'Default Room Type Rates' },
         { icon: 'block',              label: 'Product Level Restrictions' },
-        { icon: 'warning',            label: 'Overbooking' },
+        { icon: 'warning',            label: 'Overbooking',  badge: 3 },
         { icon: 'construction',       label: 'Out of Order Rooms' },
-        { icon: 'event',              label: 'Events' },
+        { icon: 'event',              label: 'Events',       badge: 1 },
         { icon: 'policy',             label: 'Rate Guidelines' },
         { icon: 'corporate_fare',     label: 'Enterprise Hotel Groups' },
         { icon: 'account_tree',       label: 'Subrates' },
@@ -941,7 +957,7 @@
         { icon: 'visibility',         label: 'Pricing Visibility' },
       ],
       reports: [
-        { icon: 'dashboard',          label: 'Dashboards' },
+        { icon: 'dashboard',          label: 'Dashboards',   badge: 2 },
         { icon: 'speed',              label: 'Pace' },
         { icon: 'stacked_line_chart', label: 'Yielding Overview' },
         { icon: 'sell',               label: 'Sellout' },
@@ -960,7 +976,7 @@
         { icon: 'leaderboard',        label: 'Hotel Performance' },
         { icon: 'monitoring',         label: 'Hotel Performance Chart' },
         { icon: 'language',           label: 'Website Activity' },
-        { icon: 'trending_down',      label: 'Lost Business' },
+        { icon: 'trending_down',      label: 'Lost Business', badge: 1 },
       ],
       groups: [
         { icon: 'swap_horiz',         label: 'Alternate Properties' },
@@ -972,15 +988,27 @@
     const morePanel  = document.getElementById('more-panel');
     let activeMoreBtn = null;
 
+    // Inject red dot on more-btns whose section has any badged items
+    document.querySelectorAll('.more-btn[data-more]').forEach(btn => {
+      const key = btn.dataset.more;
+      if (MORE_ITEMS[key] && MORE_ITEMS[key].some(item => item.badge)) {
+        const dot = document.createElement('span');
+        dot.className = 'more-btn-dot';
+        // Insert before the chevron icon (last child)
+        btn.insertBefore(dot, btn.lastElementChild);
+      }
+    });
+
     function toggleMorePanel(btn, key) {
       if (activeMoreBtn === btn) { closeMorePanel(); return; }
       activeMoreBtn = btn;
 
       // Build items
-      morePanel.innerHTML = MORE_ITEMS[key].map(({ icon, label }) => `
+      morePanel.innerHTML = MORE_ITEMS[key].map(({ icon, label, badge }) => `
         <div class="more-panel-item" onclick="selectMoreItem(this, '${label.replace(/'/g,"\\'")}')">
           <span class="ms">${icon}</span>
           <span class="more-panel-label">${label}</span>
+          ${badge ? `<span class="more-panel-badge">${badge}</span>` : ''}
         </div>`).join('');
 
       // Position: right of sidebar, vertically near the button
