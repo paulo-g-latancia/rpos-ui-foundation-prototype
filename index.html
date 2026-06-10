@@ -203,9 +203,10 @@
       color: var(--text-secondary);
       line-height: 32px;
       white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
       opacity: 1;
       max-height: 32px;
-      overflow: hidden;
       transition: opacity 0.15s ease, max-height 0.2s ease;
     }
     .sidebar.collapsed .section-label {
@@ -385,6 +386,8 @@
       flex: none;
       gap: 2px;
     }
+    /* In collapsed state, push logout to the bottom */
+    .sidebar.collapsed .logout-btn { order: 1; }
 
     /* ─── Main area ───────────────────────────────────────────────── */
     .main {
