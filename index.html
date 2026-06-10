@@ -269,12 +269,15 @@
       border-radius: 50%;
       background: var(--error);
       border: 1.5px solid var(--bg-paper);
-      margin-left: -6px;  /* overlap the icon's top-right corner */
-      margin-top: -10px;
-      flex-shrink: 0;
-      align-self: flex-start;
     }
-    .sidebar.collapsed .nav-dot { display: block; }
+    .sidebar.collapsed .nav-dot {
+      display: block;
+      position: absolute;
+      top: 5px;
+      /* icon is 20px centered in 56px = right edge at 38px from left;
+         dot (10px) centered on that edge → left:33px → right:13px */
+      right: 13px;
+    }
 
     .nav-label {
       font-size: 14px;
