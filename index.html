@@ -692,20 +692,27 @@
       </button>
     </div>
 
-    <!-- Home -->
+    <!-- Home (standalone) -->
     <div class="nav-item" data-nav-tooltip="Home" onclick="setActive(this)">
       <div class="nav-accent"></div>
       <span class="ms">home</span>
       <span class="nav-label">Home</span>
     </div>
 
-    <!-- Rates & Pricing -->
+    <!-- Advance (standalone) -->
+    <div class="nav-item" data-nav-tooltip="Advance" onclick="setActive(this)">
+      <div class="nav-accent"></div>
+      <span class="ms">rocket_launch</span>
+      <span class="nav-label">Advance</span>
+    </div>
+
+    <!-- Pricing & Strategy -->
     <div class="nav-section">
-      <div class="section-label">Rates &amp; Pricing</div>
-      <div class="nav-item active" data-nav-tooltip="Manage Rates" onclick="setActive(this)">
+      <div class="section-label">Pricing &amp; Strategy</div>
+      <div class="nav-item active" data-nav-tooltip="Rates" onclick="setActive(this)">
         <div class="nav-accent"></div>
         <span class="ms">price_change</span>
-        <span class="nav-label">Manage Rates</span>
+        <span class="nav-label">Rates</span>
       </div>
       <div class="nav-item" data-nav-tooltip="Restrictions" onclick="setActive(this)">
         <div class="nav-accent"></div>
@@ -713,27 +720,29 @@
         <span class="nav-label">Restrictions</span>
         <span class="badge">1</span>
       </div>
+      <div class="nav-item" data-nav-tooltip="Strategy Hub" onclick="setActive(this)">
+        <div class="nav-accent"></div>
+        <span class="ms">hub</span>
+        <span class="nav-label">Strategy Hub</span>
+      </div>
       <button class="more-btn">
-        14 more <span class="ms" style="font-size:18px">expand_more</span>
+        11 more <span class="ms" style="font-size:18px">expand_more</span>
       </button>
     </div>
 
-    <!-- Strategy -->
+    <!-- Forecasts & Budgets -->
     <div class="nav-section">
-      <div class="section-label">Strategy</div>
-      <div class="nav-item" data-nav-tooltip="Pricing Strategy" onclick="setActive(this)">
+      <div class="section-label">Forecasts &amp; Budgets</div>
+      <div class="nav-item" data-nav-tooltip="Forecast &amp; Budget Builder" onclick="setActive(this)">
         <div class="nav-accent"></div>
-        <span class="ms">local_offer</span>
-        <span class="nav-label">Pricing Strategy</span>
+        <span class="ms">analytics</span>
+        <span class="nav-label">Forecast &amp; Budget Builder</span>
       </div>
-      <div class="nav-item" data-nav-tooltip="Autopilot" onclick="setActive(this)">
+      <div class="nav-item" data-nav-tooltip="Templates" onclick="setActive(this)">
         <div class="nav-accent"></div>
-        <span class="ms">airplanemode_active</span>
-        <span class="nav-label">Autopilot</span>
+        <span class="ms">description</span>
+        <span class="nav-label">Templates</span>
       </div>
-      <button class="more-btn">
-        7 more <span class="ms" style="font-size:18px">expand_more</span>
-      </button>
     </div>
 
     <!-- Reports -->
@@ -755,27 +764,34 @@
         <span class="nav-label">Daily Pace</span>
       </div>
       <button class="more-btn">
-        8 more <span class="ms" style="font-size:18px">expand_more</span>
+        20 more <span class="ms" style="font-size:18px">expand_more</span>
       </button>
     </div>
 
-    <!-- Forecasts & Groups (grows to fill space) -->
+    <!-- Groups (grows to fill space) -->
     <div class="nav-section grow">
-      <div class="section-label">Forecasts &amp; Groups</div>
-      <div class="nav-item" data-nav-tooltip="Forecasts &amp; Budgets" onclick="setActive(this)">
+      <div class="section-label">Groups</div>
+      <div class="nav-item" data-nav-tooltip="Quotes" onclick="setActive(this)">
         <div class="nav-accent"></div>
-        <span class="ms">work</span>
-        <span class="nav-label">Forecasts &amp; Budgets</span>
-      </div>
-      <div class="nav-item" data-nav-tooltip="Groups" onclick="setActive(this)">
-        <div class="nav-accent"></div>
-        <span class="ms">groups</span><span class="nav-dot"></span>
-        <span class="nav-label">Groups</span>
+        <span class="ms">request_quote</span><span class="nav-dot"></span>
+        <span class="nav-label">Quotes</span>
         <span class="badge">1</span>
+      </div>
+      <div class="nav-item" data-nav-tooltip="Group Wash" onclick="setActive(this)">
+        <div class="nav-accent"></div>
+        <span class="ms">water</span>
+        <span class="nav-label">Group Wash</span>
       </div>
       <button class="more-btn">
         3 more <span class="ms" style="font-size:18px">expand_more</span>
       </button>
+    </div>
+
+    <!-- Onboarding (standalone, bottom of list) -->
+    <div class="nav-item" data-nav-tooltip="Onboarding" onclick="setActive(this)">
+      <div class="nav-accent"></div>
+      <span class="ms">checklist</span>
+      <span class="nav-label">Onboarding</span>
     </div>
 
     <!-- Resize handle -->
@@ -844,7 +860,7 @@
     <!-- Page content -->
     <div class="page-wrap">
       <div class="page-header">
-        <h1 class="page-title">Manage Rates</h1>
+        <h1 class="page-title">Rates</h1>
         <button class="btn-text">
           <span class="ms">tune</span>
           Secondary Action
