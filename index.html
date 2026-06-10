@@ -646,6 +646,48 @@
       .sidebar .bottom-actions   { flex-direction: column; flex: none; gap: 2px; }
     }
 
+    /* ─── "More" floating panel ──────────────────────────────────── */
+    .more-panel {
+      position: fixed;
+      z-index: 500;
+      background: var(--bg-paper);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.28);
+      min-width: 232px;
+      max-height: 60vh;
+      overflow-y: auto;
+      padding: 4px 0;
+      display: none;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .more-panel.open { display: block; }
+
+    .more-panel-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 16px;
+      height: 36px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.1s;
+    }
+    .more-panel-item:hover { background: var(--hover-overlay); }
+    .more-panel-item .ms {
+      font-size: 20px;
+      color: var(--text-secondary);
+      flex-shrink: 0;
+    }
+    .more-panel-item .more-panel-label {
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--text-secondary);
+      letter-spacing: 0.17px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
     /* ─── Material Symbols helper ─────────────────────────────────── */
     .ms {
       font-family: 'Material Symbols Outlined', sans-serif;
@@ -729,8 +771,8 @@
         <span class="nav-label">Strategy Hub</span>
         <span class="badge">1</span>
       </div>
-      <button class="more-btn">
-        11 more <span class="ms" style="font-size:18px">expand_more</span>
+      <button class="more-btn" onclick="toggleMorePanel(this, 'pricing')">
+        11 more <span class="ms" style="font-size:18px">chevron_right</span>
       </button>
     </div>
 
@@ -767,8 +809,8 @@
         <span class="ms">today</span>
         <span class="nav-label">Daily Pace</span>
       </div>
-      <button class="more-btn">
-        20 more <span class="ms" style="font-size:18px">expand_more</span>
+      <button class="more-btn" onclick="toggleMorePanel(this, 'reports')">
+        20 more <span class="ms" style="font-size:18px">chevron_right</span>
       </button>
     </div>
 
@@ -786,8 +828,8 @@
         <span class="nav-label">Group Wash</span>
         <span class="badge">1</span>
       </div>
-      <button class="more-btn">
-        3 more <span class="ms" style="font-size:18px">expand_more</span>
+      <button class="more-btn" onclick="toggleMorePanel(this, 'groups')">
+        3 more <span class="ms" style="font-size:18px">chevron_right</span>
       </button>
     </div>
 
@@ -879,7 +921,104 @@
 
   </div>
 
+  <!-- Floating "more" panel -->
+  <div id="more-panel" class="more-panel"></div>
+
   <script>
+    /* ── "More" panel data ───────────────────────────────────────── */
+    const MORE_ITEMS = {
+      pricing: [
+        { icon: 'king_bed',           label: 'Default Room Type Rates' },
+        { icon: 'block',              label: 'Product Level Restrictions' },
+        { icon: 'warning',            label: 'Overbooking' },
+        { icon: 'construction',       label: 'Out of Order Rooms' },
+        { icon: 'event',              label: 'Events' },
+        { icon: 'policy',             label: 'Rate Guidelines' },
+        { icon: 'corporate_fare',     label: 'Enterprise Hotel Groups' },
+        { icon: 'account_tree',       label: 'Subrates' },
+        { icon: 'change_history',     label: 'Rate Change Activity' },
+        { icon: 'history',            label: 'Restriction Change Activity' },
+        { icon: 'visibility',         label: 'Pricing Visibility' },
+      ],
+      reports: [
+        { icon: 'dashboard',          label: 'Dashboards' },
+        { icon: 'speed',              label: 'Pace' },
+        { icon: 'stacked_line_chart', label: 'Yielding Overview' },
+        { icon: 'sell',               label: 'Sellout' },
+        { icon: 'bar_chart',          label: 'Rate Analysis' },
+        { icon: 'king_bed',           label: 'Room Type Analysis' },
+        { icon: 'show_chart',         label: 'Daily Booking Curve' },
+        { icon: 'area_chart',         label: 'Cumulative Booking Curve' },
+        { icon: 'trending_up',        label: 'Average Booking Curve' },
+        { icon: 'compare',            label: 'Competitor Rate' },
+        { icon: 'swap_vert',          label: 'Competitor Rate Change' },
+        { icon: 'balance',            label: 'Rate Similarity Comparison' },
+        { icon: 'account_balance',    label: 'Financial Forecast' },
+        { icon: 'savings',            label: 'Performance vs Budget' },
+        { icon: 'category',           label: 'Market Segment & Room Type' },
+        { icon: 'settings_suggest',   label: 'Operations' },
+        { icon: 'leaderboard',        label: 'Hotel Performance' },
+        { icon: 'monitoring',         label: 'Hotel Performance Chart' },
+        { icon: 'language',           label: 'Website Activity' },
+        { icon: 'trending_down',      label: 'Lost Business' },
+      ],
+      groups: [
+        { icon: 'swap_horiz',         label: 'Alternate Properties' },
+        { icon: 'tune',               label: 'Group Settings' },
+      ],
+    };
+
+    /* ── More panel logic ────────────────────────────────────────── */
+    const morePanel  = document.getElementById('more-panel');
+    let activeMoreBtn = null;
+
+    function toggleMorePanel(btn, key) {
+      if (activeMoreBtn === btn) { closeMorePanel(); return; }
+      activeMoreBtn = btn;
+
+      // Build items
+      morePanel.innerHTML = MORE_ITEMS[key].map(({ icon, label }) => `
+        <div class="more-panel-item" onclick="selectMoreItem(this, '${label.replace(/'/g,"\\'")}')">
+          <span class="ms">${icon}</span>
+          <span class="more-panel-label">${label}</span>
+        </div>`).join('');
+
+      // Position: right of sidebar, vertically near the button
+      const sidebar  = document.querySelector('.sidebar');
+      const btnRect  = btn.getBoundingClientRect();
+      const sideRect = sidebar.getBoundingClientRect();
+      morePanel.classList.add('open');
+
+      const gap = 8;
+      let top = btnRect.top;
+      morePanel.style.left = (sideRect.right + gap) + 'px';
+      morePanel.style.top  = top + 'px';
+
+      // Keep within viewport vertically
+      const ph = morePanel.offsetHeight;
+      if (top + ph > window.innerHeight - 16)
+        morePanel.style.top = Math.max(8, window.innerHeight - ph - 16) + 'px';
+    }
+
+    function closeMorePanel() {
+      morePanel.classList.remove('open');
+      activeMoreBtn = null;
+    }
+
+    function selectMoreItem(el, label) {
+      document.querySelector('.page-title').textContent = label;
+      closeMorePanel();
+    }
+
+    document.addEventListener('click', e => {
+      if (!activeMoreBtn) return;
+      if (!morePanel.contains(e.target) && !e.target.closest('.more-btn'))
+        closeMorePanel();
+    });
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeMorePanel();
+    });
     /* ── Sidebar tooltip (position:fixed — escapes overflow:hidden) ── */
     const stip = document.createElement('div');
     Object.assign(stip.style, {
