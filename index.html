@@ -195,6 +195,7 @@
     .icon-btn .ms { font-size: 20px; color: var(--icon-color); }
 
     /* Nav sections */
+    .nav-list { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; }
     .nav-section { display: flex; flex-direction: column; flex-shrink: 0; padding-top: 4px; }
     .nav-section.grow { flex: 1 0 0; min-height: 0; }
 
@@ -834,6 +835,9 @@
       </button>
     </div>
 
+    <!-- Scrollable nav list -->
+    <div class="nav-list">
+
     <!-- Home (standalone) -->
     <div class="nav-item active" data-nav-tooltip="Home" onclick="setActive(this)">
       <div class="nav-accent"></div>
@@ -944,6 +948,8 @@
         <span class="nav-label">Find My Rate</span>
       </div>
     </div>
+
+    </div><!-- /.nav-list -->
 
     <!-- Resize handle -->
     <div class="sidebar-resizer" id="sidebar-resizer"></div>
