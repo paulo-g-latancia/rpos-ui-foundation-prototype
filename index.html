@@ -1144,12 +1144,7 @@
 
     <!-- Configure -->
     <div class="nav-section">
-      <div class="section-label">Configure</div>
-      <div class="nav-item" data-nav-tooltip="Onboarding" onclick="setActive(this)">
-        <div class="nav-accent"></div>
-        <span class="ms">checklist</span>
-        <span class="nav-label">Onboarding</span>
-      </div>
+      <div class="section-label">Other</div>
       <div class="nav-item" data-nav-tooltip="Find My Rate" onclick="setActive(this)">
         <div class="nav-accent"></div>
         <span class="ms">manage_search</span>
@@ -1670,7 +1665,7 @@
       const allSel = selectedPropertyId === 'all' ? ' selected' : '';
       html += `
         <div class="prop-dropdown-all${allSel}" onclick="selectProperty('all','all')">
-          <span class="ms">domain</span>
+          <span class="ms">language</span>
           <span class="prop-dropdown-all-name">All Properties</span>
           <span class="ms prop-dropdown-check">check</span>
         </div>`;
