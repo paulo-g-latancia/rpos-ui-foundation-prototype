@@ -470,6 +470,96 @@
     }
     .select-arrow { font-size: 24px; color: var(--text-secondary); margin-left: 8px; flex-shrink: 0; }
 
+    /* Property dropdown */
+    .prop-dropdown {
+      display: none;
+      position: fixed;
+      z-index: 1400;
+      background: var(--bg-paper);
+      border-radius: 4px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.28);
+      width: 320px;
+      overflow: hidden;
+      max-height: 480px;
+      overflow-y: auto;
+    }
+    .prop-dropdown.open { display: block; }
+    .prop-dropdown-section-label {
+      padding: 10px 16px 4px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.9px;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+    }
+    .prop-dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 16px;
+      cursor: pointer;
+      transition: background 0.12s;
+      min-height: 40px;
+    }
+    .prop-dropdown-item:hover { background: var(--hover-overlay); }
+    .prop-dropdown-item.selected { background: var(--active-bg); }
+    .prop-dropdown-item .ms {
+      font-size: 20px;
+      color: var(--text-secondary);
+      flex-shrink: 0;
+    }
+    .prop-dropdown-item.selected .ms { color: var(--active-accent); }
+    .prop-dropdown-item-text { flex: 1; min-width: 0; }
+    .prop-dropdown-item-name {
+      font-size: 14px;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.43;
+    }
+    .prop-dropdown-item.selected .prop-dropdown-item-name { color: var(--active-accent); font-weight: 500; }
+    .prop-dropdown-item-sub {
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.4;
+      margin-top: 1px;
+    }
+    .prop-dropdown-check {
+      font-size: 18px;
+      color: var(--active-accent);
+      flex-shrink: 0;
+      opacity: 0;
+    }
+    .prop-dropdown-item.selected .prop-dropdown-check { opacity: 1; }
+    .prop-dropdown-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 4px 0;
+    }
+    .prop-dropdown-all {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 16px;
+      cursor: pointer;
+      transition: background 0.12s;
+      border-top: 1px solid var(--border);
+    }
+    .prop-dropdown-all:hover { background: var(--hover-overlay); }
+    .prop-dropdown-all.selected { background: var(--active-bg); }
+    .prop-dropdown-all .ms { font-size: 20px; color: var(--text-secondary); flex-shrink: 0; }
+    .prop-dropdown-all.selected .ms { color: var(--active-accent); }
+    .prop-dropdown-all-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-primary);
+      flex: 1;
+    }
+    .prop-dropdown-all.selected .prop-dropdown-all-name { color: var(--active-accent); }
+    .prop-dropdown-all .prop-dropdown-check { font-size: 18px; color: var(--active-accent); opacity: 0; }
+    .prop-dropdown-all.selected .prop-dropdown-check { opacity: 1; }
+
     /* Topbar icon buttons (24px icons) */
     .topbar-actions { display: flex; align-items: center; gap: 16px; }
 
@@ -1058,14 +1148,15 @@
       <div class="topbar-pickers">
 
         <!-- Property selector -->
-        <div class="select-wrap" onclick="this.querySelector('.select-inner').style.borderColor='var(--active-accent)'">
-          <div class="select-inner">
+        <div class="select-wrap" id="prop-select-wrap" onclick="togglePropertyDropdown()">
+          <div class="select-inner" id="prop-select-inner">
             <span class="ms ms-filled select-start" style="font-size:24px">apartment</span>
-            <span class="select-value">Karina City Centre Hotel</span>
+            <span class="select-value" id="prop-select-value">Karina City Centre Hotel</span>
             <span class="ms ms-filled select-arrow">arrow_drop_down</span>
           </div>
           <span class="select-label">Property</span>
         </div>
+        <div class="prop-dropdown" id="prop-dropdown"></div>
 
         <!-- Stay dates selector -->
         <div class="select-wrap">
@@ -1506,8 +1597,130 @@
     syncCollapsed();
     window.addEventListener('resize', syncCollapsed);
 
+    /* ── Property picker data ────────────────────────────────────── */
+    const PROPERTIES = [
+      { id: 'p1', name: 'Karina City Centre Hotel' },
+      { id: 'p2', name: 'The Meridian Waterfront' },
+      { id: 'p3', name: 'Grand Pacific Tower' },
+      { id: 'p4', name: 'Bellshire Garden Resort' },
+      { id: 'p5', name: 'Nova Urban Suites' },
+      { id: 'p6', name: 'The Lantern District Hotel' },
+      { id: 'p7', name: 'Coastline Retreat & Spa' },
+      { id: 'p8', name: 'Harwick Business Hotel' },
+    ];
+
+    const CLUSTERS = [
+      { id: 'c1', name: 'City Centre Portfolio',   props: ['p1','p3','p6','p8'] },
+      { id: 'c2', name: 'Luxury & Leisure',        props: ['p2','p4','p7'] },
+      { id: 'c3', name: 'Business Traveler Select',props: ['p1','p3','p5','p8'] },
+      { id: 'c4', name: 'Coastal Collection',      props: ['p2','p6','p7'] },
+      { id: 'c5', name: 'Urban Boutiques',         props: ['p1','p5','p6'] },
+    ];
+
+    let selectedPropertyId = 'p1';
+
+    function buildPropertyDropdown() {
+      const dd = document.getElementById('prop-dropdown');
+      const propCount = id => CLUSTERS.find(c => c.id === id)?.props.length ?? 0;
+
+      let html = '';
+
+      // Clusters section
+      html += `<div class="prop-dropdown-section-label">Clusters</div>`;
+      CLUSTERS.forEach(c => {
+        const sel = selectedPropertyId === c.id ? ' selected' : '';
+        const count = c.props.length;
+        html += `
+          <div class="prop-dropdown-item${sel}" onclick="selectProperty('${c.id}','cluster')">
+            <span class="ms">workspaces</span>
+            <div class="prop-dropdown-item-text">
+              <div class="prop-dropdown-item-name">${c.name}</div>
+              <div class="prop-dropdown-item-sub">${count} propert${count === 1 ? 'y' : 'ies'}</div>
+            </div>
+            <span class="ms prop-dropdown-check">check</span>
+          </div>`;
+      });
+
+      // Properties section
+      html += `<div class="prop-dropdown-divider"></div>`;
+      html += `<div class="prop-dropdown-section-label">Properties</div>`;
+      PROPERTIES.forEach(p => {
+        const sel = selectedPropertyId === p.id ? ' selected' : '';
+        html += `
+          <div class="prop-dropdown-item${sel}" onclick="selectProperty('${p.id}','property')">
+            <span class="ms">apartment</span>
+            <div class="prop-dropdown-item-text">
+              <div class="prop-dropdown-item-name">${p.name}</div>
+            </div>
+            <span class="ms prop-dropdown-check">check</span>
+          </div>`;
+      });
+
+      // All Properties
+      const allSel = selectedPropertyId === 'all' ? ' selected' : '';
+      html += `
+        <div class="prop-dropdown-all${allSel}" onclick="selectProperty('all','all')">
+          <span class="ms">domain</span>
+          <span class="prop-dropdown-all-name">All Properties</span>
+          <span class="ms prop-dropdown-check">check</span>
+        </div>`;
+
+      dd.innerHTML = html;
+    }
+
+    function togglePropertyDropdown() {
+      const dd = document.getElementById('prop-dropdown');
+      const inner = document.getElementById('prop-select-inner');
+      if (dd.classList.contains('open')) {
+        closePropertyDropdown();
+      } else {
+        buildPropertyDropdown();
+        // Position below the picker
+        const wrap = document.getElementById('prop-select-wrap');
+        const rect = wrap.getBoundingClientRect();
+        dd.style.left  = rect.left + 'px';
+        dd.style.top   = (rect.bottom + 4) + 'px';
+        dd.classList.add('open');
+        inner.style.borderColor = 'var(--active-accent)';
+      }
+    }
+
+    function closePropertyDropdown() {
+      const dd = document.getElementById('prop-dropdown');
+      const inner = document.getElementById('prop-select-inner');
+      dd.classList.remove('open');
+      inner.style.borderColor = '';
+    }
+
+    function selectProperty(id, type) {
+      selectedPropertyId = id;
+      let label;
+      if (id === 'all') {
+        label = 'All Properties';
+      } else if (type === 'cluster') {
+        label = CLUSTERS.find(c => c.id === id)?.name ?? '';
+      } else {
+        label = PROPERTIES.find(p => p.id === id)?.name ?? '';
+      }
+      document.getElementById('prop-select-value').textContent = label;
+      // If currently on Home, update the page title too
+      const activeNav = document.querySelector('.nav-item.active .nav-label');
+      if (!activeNav || activeNav.textContent.trim() === 'Home') {
+        document.querySelector('.page-title').textContent = label;
+      }
+      closePropertyDropdown();
+    }
+
+    // Close dropdown on outside click
+    document.addEventListener('click', e => {
+      if (!document.getElementById('prop-select-wrap').contains(e.target) &&
+          !document.getElementById('prop-dropdown').contains(e.target)) {
+        closePropertyDropdown();
+      }
+    });
+
     function getPropertyName() {
-      return document.querySelector('.select-value').textContent.trim();
+      return document.getElementById('prop-select-value').textContent.trim();
     }
 
     function setActive(el) {
