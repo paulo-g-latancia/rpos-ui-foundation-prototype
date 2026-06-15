@@ -544,7 +544,7 @@
       padding: 10px 16px;
       cursor: pointer;
       transition: background 0.12s;
-      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
     }
     .prop-dropdown-all:hover { background: var(--hover-overlay); }
     .prop-dropdown-all.selected { background: var(--active-bg); }
@@ -559,6 +559,48 @@
     .prop-dropdown-all.selected .prop-dropdown-all-name { color: var(--active-accent); }
     .prop-dropdown-all .prop-dropdown-check { font-size: 18px; color: var(--active-accent); opacity: 0; }
     .prop-dropdown-all.selected .prop-dropdown-check { opacity: 1; }
+
+    /* Cluster member tooltip */
+    .cluster-tip {
+      display: none;
+      position: fixed;
+      z-index: 1500;
+      background: var(--bg-paper);
+      border-radius: 4px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+      padding: 6px 0 8px;
+      min-width: 210px;
+      pointer-events: none;
+    }
+    .cluster-tip.visible { display: block; }
+    .cluster-tip-title {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.9px;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      padding: 2px 12px 6px;
+    }
+    .cluster-tip-prop {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 3px 12px;
+      font-size: 13px;
+      color: var(--text-primary);
+      line-height: 1.45;
+    }
+    .cluster-tip-prop .ms { font-size: 16px; color: var(--text-secondary); flex-shrink: 0; }
+    /* Info icon trigger inside cluster rows */
+    .cluster-info-icon {
+      font-size: 16px !important;
+      color: var(--text-secondary) !important;
+      opacity: 0;
+      transition: opacity 0.15s;
+      flex-shrink: 0;
+      margin-left: -4px;
+    }
+    .prop-dropdown-item:hover .cluster-info-icon { opacity: 0.7; }
 
     /* Topbar icon buttons (24px icons) */
     .topbar-actions { display: flex; align-items: center; gap: 16px; }
@@ -1240,6 +1282,7 @@
 
   <!-- Floating "more" panel -->
   <div id="more-panel" class="more-panel"></div>
+  <div id="cluster-tip" class="cluster-tip"></div>
 
   <script>
     /* ── "More" panel data ───────────────────────────────────────── */
@@ -1621,9 +1664,16 @@
 
     function buildPropertyDropdown() {
       const dd = document.getElementById('prop-dropdown');
-      const propCount = id => CLUSTERS.find(c => c.id === id)?.props.length ?? 0;
-
       let html = '';
+
+      // All Properties — top
+      const allSel = selectedPropertyId === 'all' ? ' selected' : '';
+      html += `
+        <div class="prop-dropdown-all${allSel}" onclick="selectProperty('all','all')">
+          <span class="ms">domain</span>
+          <span class="prop-dropdown-all-name">All Properties</span>
+          <span class="ms prop-dropdown-check">check</span>
+        </div>`;
 
       // Clusters section
       html += `<div class="prop-dropdown-section-label">Clusters</div>`;
@@ -1631,12 +1681,16 @@
         const sel = selectedPropertyId === c.id ? ' selected' : '';
         const count = c.props.length;
         html += `
-          <div class="prop-dropdown-item${sel}" onclick="selectProperty('${c.id}','cluster')">
+          <div class="prop-dropdown-item${sel}" data-cluster-id="${c.id}"
+               onclick="selectProperty('${c.id}','cluster')"
+               onmouseenter="showClusterTip(this,'${c.id}')"
+               onmouseleave="hideClusterTip()">
             <span class="ms">workspaces</span>
             <div class="prop-dropdown-item-text">
               <div class="prop-dropdown-item-name">${c.name}</div>
               <div class="prop-dropdown-item-sub">${count} propert${count === 1 ? 'y' : 'ies'}</div>
             </div>
+            <span class="ms cluster-info-icon">info</span>
             <span class="ms prop-dropdown-check">check</span>
           </div>`;
       });
@@ -1656,16 +1710,26 @@
           </div>`;
       });
 
-      // All Properties
-      const allSel = selectedPropertyId === 'all' ? ' selected' : '';
-      html += `
-        <div class="prop-dropdown-all${allSel}" onclick="selectProperty('all','all')">
-          <span class="ms">domain</span>
-          <span class="prop-dropdown-all-name">All Properties</span>
-          <span class="ms prop-dropdown-check">check</span>
-        </div>`;
-
       dd.innerHTML = html;
+    }
+
+    function showClusterTip(rowEl, clusterId) {
+      const cluster = CLUSTERS.find(c => c.id === clusterId);
+      if (!cluster) return;
+      const tip = document.getElementById('cluster-tip');
+      const propNames = cluster.props.map(pid => PROPERTIES.find(p => p.id === pid)?.name).filter(Boolean);
+      tip.innerHTML = `
+        <div class="cluster-tip-title">Properties in cluster</div>
+        ${propNames.map(n => `<div class="cluster-tip-prop"><span class="ms">apartment</span>${n}</div>`).join('')}
+      `;
+      const rect = rowEl.getBoundingClientRect();
+      tip.style.left = (rect.right + 6) + 'px';
+      tip.style.top  = rect.top + 'px';
+      tip.classList.add('visible');
+    }
+
+    function hideClusterTip() {
+      document.getElementById('cluster-tip').classList.remove('visible');
     }
 
     function togglePropertyDropdown() {
@@ -1686,10 +1750,9 @@
     }
 
     function closePropertyDropdown() {
-      const dd = document.getElementById('prop-dropdown');
-      const inner = document.getElementById('prop-select-inner');
-      dd.classList.remove('open');
-      inner.style.borderColor = '';
+      document.getElementById('prop-dropdown').classList.remove('open');
+      document.getElementById('prop-select-inner').style.borderColor = '';
+      hideClusterTip();
     }
 
     function selectProperty(id, type) {
@@ -1737,6 +1800,7 @@
         const title = isHome ? getPropertyName() : labelText;
         document.querySelector('.page-title').textContent = title;
         document.querySelectorAll('.page-actions').forEach(b => b.style.display = isHome ? 'none' : '');
+        document.querySelector('.page-tabs').style.display = isHome ? '' : 'none';
       }
       showAlert(labelText);
     }
@@ -1746,9 +1810,10 @@
       btn.classList.add('active');
     }
 
-    // Init: set Home title to property name and hide page actions
+    // Init: set Home title to property name, hide page actions, show tabs
     document.querySelector('.page-title').textContent = getPropertyName();
     document.querySelectorAll('.page-actions').forEach(b => b.style.display = 'none');
+    // tabs visible on Home by default, hidden on other pages via setActive
   </script>
 </body>
 </html>
