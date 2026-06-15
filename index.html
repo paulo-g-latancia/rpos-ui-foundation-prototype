@@ -556,6 +556,65 @@
       line-height: 1.334;
     }
 
+    /* Tab bar */
+    .page-tabs {
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      padding: 0 8px;
+      flex-shrink: 0;
+      background: var(--bg-default);
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .page-tabs-list { display: flex; align-items: center; flex: 1; min-width: 0; }
+    .page-tab {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      padding: 9px 16px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .page-tab-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      letter-spacing: 0.4px;
+      line-height: 24px;
+    }
+    .page-tab.active .page-tab-label { color: var(--active-accent); }
+    .page-tab-indicator {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--active-accent);
+      border-radius: 2px 2px 0 0;
+      display: none;
+    }
+    .page-tab.active .page-tab-indicator { display: block; }
+    .tab-icon-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border: none;
+      background: transparent;
+      border-radius: 50%;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.15s;
+    }
+    .tab-icon-btn:hover { background: var(--hover-overlay); }
+    .tab-icon-btn .ms { font-size: 24px; color: var(--icon-color); }
+
     /* Page alert banner — pixel-perfect to Figma spec */
     .page-alert-wrap {
       display: none;
@@ -1060,6 +1119,31 @@
           Primary Action
         </button>
       </div>
+
+      <!-- Tab bar -->
+      <div class="page-tabs">
+        <div class="page-tabs-list">
+          <button class="page-tab active" onclick="selectTab(this)">
+            <span class="page-tab-label">Priorities</span>
+            <div class="page-tab-indicator"></div>
+          </button>
+          <button class="page-tab" onclick="selectTab(this)">
+            <span class="page-tab-label">Performance</span>
+            <div class="page-tab-indicator"></div>
+          </button>
+          <button class="page-tab" onclick="selectTab(this)">
+            <span class="page-tab-label">Insights</span>
+            <div class="page-tab-indicator"></div>
+          </button>
+          <button class="tab-icon-btn" data-tooltip="Add tab" data-tooltip-pos="bottom">
+            <span class="ms">add</span>
+          </button>
+        </div>
+        <button class="tab-icon-btn" data-tooltip="More options" data-tooltip-pos="bottom">
+          <span class="ms">more_vert</span>
+        </button>
+      </div>
+
       <div class="page-alert-wrap" id="page-alert-wrap">
         <div class="page-alert" id="page-alert">
           <div class="page-alert-icon-wrap">
@@ -1438,6 +1522,10 @@
     syncCollapsed();
     window.addEventListener('resize', syncCollapsed);
 
+    function getPropertyName() {
+      return document.querySelector('.select-value').textContent.trim();
+    }
+
     function setActive(el) {
       // Remove surfaced item if navigating away from it
       if (surfacedItem && surfacedItem.navEl !== el) {
@@ -1447,9 +1535,20 @@
       el.classList.add('active');
       const label = el.querySelector('.nav-label');
       const labelText = label ? label.textContent.trim() : '';
-      if (labelText) document.querySelector('.page-title').textContent = labelText;
+      if (labelText) {
+        const title = labelText === 'Home' ? getPropertyName() : labelText;
+        document.querySelector('.page-title').textContent = title;
+      }
       showAlert(labelText);
     }
+
+    function selectTab(btn) {
+      document.querySelectorAll('.page-tab').forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+    }
+
+    // Init: set Home title to property name
+    document.querySelector('.page-title').textContent = getPropertyName();
   </script>
 </body>
 </html>
