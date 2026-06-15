@@ -845,41 +845,75 @@
       <span class="nav-label">Home</span>
     </div>
 
-    <!-- Advance (standalone) -->
-    <div class="nav-item" data-nav-tooltip="Advance" onclick="setActive(this)">
-      <div class="nav-accent"></div>
-      <span class="ms">rocket_launch</span><span class="nav-dot"></span>
-      <span class="nav-label">Advance</span>
-      <span class="badge">2</span>
+    <!-- Detect -->
+    <div class="nav-section">
+      <div class="section-label">Detect</div>
+      <div class="nav-item" data-nav-tooltip="Advance" onclick="setActive(this)">
+        <div class="nav-accent"></div>
+        <span class="ms">rocket_launch</span><span class="nav-dot"></span>
+        <span class="nav-label">Advance</span>
+        <span class="badge">2</span>
+      </div>
+      <div class="nav-item" data-nav-tooltip="Demand Calendar" onclick="setActive(this)">
+        <div class="nav-accent"></div>
+        <span class="ms">calendar_month</span>
+        <span class="nav-label">Demand Calendar</span>
+      </div>
     </div>
 
-    <!-- Pricing & Strategy -->
+    <!-- Strategize -->
     <div class="nav-section">
-      <div class="section-label">Pricing &amp; Strategy</div>
-      <div class="nav-item" data-nav-tooltip="Rates" onclick="setActive(this)">
-        <div class="nav-accent"></div>
-        <span class="ms">price_change</span>
-        <span class="nav-label">Rates</span>
-      </div>
-      <div class="nav-item" data-nav-tooltip="Restrictions" onclick="setActive(this)">
-        <div class="nav-accent"></div>
-        <span class="ms">lock_clock</span>
-        <span class="nav-label">Restrictions</span>
-      </div>
+      <div class="section-label">Strategize</div>
       <div class="nav-item" data-nav-tooltip="Strategy Hub" onclick="setActive(this)">
         <div class="nav-accent"></div>
         <span class="ms">hub</span><span class="nav-dot"></span>
         <span class="nav-label">Strategy Hub</span>
         <span class="badge">1</span>
       </div>
-      <button class="more-btn" data-more="pricing" onclick="toggleMorePanel(this, 'pricing')">
-        11 more <span class="ms" style="font-size:18px">chevron_right</span>
+      <div class="nav-item" data-nav-tooltip="Channel Mix" onclick="setActive(this)">
+        <div class="nav-accent"></div>
+        <span class="ms">alt_route</span>
+        <span class="nav-label">Channel Mix</span>
+      </div>
+      <div class="nav-item" data-nav-tooltip="Segment Policies" onclick="setActive(this)">
+        <div class="nav-accent"></div>
+        <span class="ms">policy</span>
+        <span class="nav-label">Segment Policies</span>
+      </div>
+      <div class="nav-item" data-nav-tooltip="Profit Strategy" onclick="setActive(this)">
+        <div class="nav-accent"></div>
+        <span class="ms">trending_up</span>
+        <span class="nav-label">Profit Strategy</span>
+      </div>
+    </div>
+
+    <!-- Operate -->
+    <div class="nav-section">
+      <div class="section-label">Operate</div>
+      <div class="nav-item" data-nav-tooltip="Manage Rates" onclick="setActive(this)">
+        <div class="nav-accent"></div>
+        <span class="ms">price_change</span>
+        <span class="nav-label">Manage Rates</span>
+      </div>
+      <div class="nav-item" data-nav-tooltip="Restrictions" onclick="setActive(this)">
+        <div class="nav-accent"></div>
+        <span class="ms">lock_clock</span>
+        <span class="nav-label">Restrictions</span>
+      </div>
+      <div class="nav-item" data-nav-tooltip="Groups" onclick="setActive(this)">
+        <div class="nav-accent"></div>
+        <span class="ms">groups</span><span class="nav-dot"></span>
+        <span class="nav-label">Groups</span>
+        <span class="badge">1</span>
+      </div>
+      <button class="more-btn" data-more="operate" onclick="toggleMorePanel(this, 'operate')">
+        15 more <span class="ms" style="font-size:18px">chevron_right</span>
       </button>
     </div>
 
-    <!-- Forecasts & Budgets -->
+    <!-- Plan -->
     <div class="nav-section">
-      <div class="section-label">Forecasts &amp; Budgets</div>
+      <div class="section-label">Plan</div>
       <div class="nav-item" data-nav-tooltip="Forecast &amp; Budget Builder" onclick="setActive(this)">
         <div class="nav-accent"></div>
         <span class="ms">analytics</span>
@@ -892,9 +926,9 @@
       </div>
     </div>
 
-    <!-- Reports -->
+    <!-- Analyze -->
     <div class="nav-section">
-      <div class="section-label">Reports</div>
+      <div class="section-label">Analyze</div>
       <div class="nav-item" data-nav-tooltip="Custom Reports" onclick="setActive(this)">
         <div class="nav-accent"></div>
         <span class="ms">addchart</span>
@@ -910,33 +944,14 @@
         <span class="ms">today</span>
         <span class="nav-label">Daily Pace</span>
       </div>
-      <button class="more-btn" data-more="reports" onclick="toggleMorePanel(this, 'reports')">
+      <button class="more-btn" data-more="analyze" onclick="toggleMorePanel(this, 'analyze')">
         20 more <span class="ms" style="font-size:18px">chevron_right</span>
       </button>
     </div>
 
-    <!-- Groups (grows to fill space) -->
+    <!-- Configure -->
     <div class="nav-section">
-      <div class="section-label">Groups</div>
-      <div class="nav-item" data-nav-tooltip="Quotes" onclick="setActive(this)">
-        <div class="nav-accent"></div>
-        <span class="ms">request_quote</span>
-        <span class="nav-label">Quotes</span>
-      </div>
-      <div class="nav-item" data-nav-tooltip="Group Wash" onclick="setActive(this)">
-        <div class="nav-accent"></div>
-        <span class="ms">water</span><span class="nav-dot"></span>
-        <span class="nav-label">Group Wash</span>
-        <span class="badge">1</span>
-      </div>
-      <button class="more-btn" data-more="groups" onclick="toggleMorePanel(this, 'groups')">
-        3 more <span class="ms" style="font-size:18px">chevron_right</span>
-      </button>
-    </div>
-
-    <!-- Other -->
-    <div class="nav-section">
-      <div class="section-label">Other</div>
+      <div class="section-label">Configure</div>
       <div class="nav-item" data-nav-tooltip="Onboarding" onclick="setActive(this)">
         <div class="nav-accent"></div>
         <span class="ms">checklist</span>
@@ -1052,21 +1067,25 @@
   <script>
     /* ── "More" panel data ───────────────────────────────────────── */
     const MORE_ITEMS = {
-      pricing: [
+      operate: [
+        { icon: 'request_quote',      label: 'Quotes' },
+        { icon: 'water',              label: 'Group Wash',              badge: 1 },
+        { icon: 'swap_horiz',         label: 'Alternate Properties' },
+        { icon: 'tune',               label: 'Group Settings' },
         { icon: 'king_bed',           label: 'Default Room Type Rates' },
         { icon: 'block',              label: 'Product Level Restrictions' },
-        { icon: 'warning',            label: 'Overbooking',  badge: 3 },
+        { icon: 'warning',            label: 'Overbooking',             badge: 3 },
         { icon: 'construction',       label: 'Out of Order Rooms' },
-        { icon: 'event',              label: 'Events',       badge: 1 },
-        { icon: 'policy',             label: 'Rate Guidelines' },
+        { icon: 'event',              label: 'Events',                  badge: 1 },
         { icon: 'corporate_fare',     label: 'Enterprise Hotel Groups' },
         { icon: 'account_tree',       label: 'Subrates' },
         { icon: 'change_history',     label: 'Rate Change Activity' },
         { icon: 'history',            label: 'Restriction Change Activity' },
         { icon: 'visibility',         label: 'Pricing Visibility' },
+        { icon: 'policy',             label: 'Rate Guidelines' },
       ],
-      reports: [
-        { icon: 'dashboard',          label: 'Dashboards',   badge: 2 },
+      analyze: [
+        { icon: 'dashboard',          label: 'Dashboards',              badge: 2 },
         { icon: 'speed',              label: 'Pace' },
         { icon: 'stacked_line_chart', label: 'Yielding Overview' },
         { icon: 'sell',               label: 'Sellout' },
@@ -1085,11 +1104,7 @@
         { icon: 'leaderboard',        label: 'Hotel Performance' },
         { icon: 'monitoring',         label: 'Hotel Performance Chart' },
         { icon: 'language',           label: 'Website Activity' },
-        { icon: 'trending_down',      label: 'Lost Business', badge: 1 },
-      ],
-      groups: [
-        { icon: 'swap_horiz',         label: 'Alternate Properties' },
-        { icon: 'tune',               label: 'Group Settings' },
+        { icon: 'trending_down',      label: 'Lost Business',           badge: 1 },
       ],
     };
 
@@ -1150,6 +1165,9 @@
       ],
       'Strategy Hub': [
         'Strategy rule conflict detected for Q3 shoulder dates',
+      ],
+      'Groups': [
+        '1 group block exceeds wash threshold — review recommended',
       ],
       'Group Wash': [
         '1 group block exceeds wash threshold — review recommended',
