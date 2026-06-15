@@ -1690,7 +1690,6 @@
               <div class="prop-dropdown-item-name">${c.name}</div>
               <div class="prop-dropdown-item-sub">${count} propert${count === 1 ? 'y' : 'ies'}</div>
             </div>
-            <span class="ms cluster-info-icon">info</span>
             <span class="ms prop-dropdown-check">check</span>
           </div>`;
       });
@@ -1718,10 +1717,7 @@
       if (!cluster) return;
       const tip = document.getElementById('cluster-tip');
       const propNames = cluster.props.map(pid => PROPERTIES.find(p => p.id === pid)?.name).filter(Boolean);
-      tip.innerHTML = `
-        <div class="cluster-tip-title">Properties in cluster</div>
-        ${propNames.map(n => `<div class="cluster-tip-prop"><span class="ms">apartment</span>${n}</div>`).join('')}
-      `;
+      tip.innerHTML = propNames.map(n => `<div class="cluster-tip-prop"><span class="ms">apartment</span>${n}</div>`).join('');
       const rect = rowEl.getBoundingClientRect();
       tip.style.left = (rect.right + 6) + 'px';
       tip.style.top  = rect.top + 'px';
