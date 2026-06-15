@@ -927,22 +927,6 @@
       <span class="nav-label">Home</span>
     </div>
 
-    <!-- Detect -->
-    <div class="nav-section">
-      <div class="section-label">Detect</div>
-      <div class="nav-item" data-nav-tooltip="Advance" onclick="setActive(this)">
-        <div class="nav-accent"></div>
-        <span class="ms">rocket_launch</span><span class="nav-dot"></span>
-        <span class="nav-label">Advance</span>
-        <span class="badge">2</span>
-      </div>
-      <div class="nav-item" data-nav-tooltip="Demand Calendar" onclick="setActive(this)">
-        <div class="nav-accent"></div>
-        <span class="ms">calendar_month</span>
-        <span class="nav-label">Demand Calendar</span>
-      </div>
-    </div>
-
     <!-- Strategize -->
     <div class="nav-section">
       <div class="section-label">Strategize</div>
@@ -1110,11 +1094,11 @@
     <div class="page-wrap">
       <div class="page-header">
         <h1 class="page-title">Home</h1>
-        <button class="btn-text">
+        <button class="btn-text page-actions">
           <span class="ms">tune</span>
           Secondary Action
         </button>
-        <button class="btn-contained">
+        <button class="btn-contained page-actions">
           <span class="ms">bolt</span>
           Primary Action
         </button>
@@ -1536,8 +1520,10 @@
       const label = el.querySelector('.nav-label');
       const labelText = label ? label.textContent.trim() : '';
       if (labelText) {
-        const title = labelText === 'Home' ? getPropertyName() : labelText;
+        const isHome = labelText === 'Home';
+        const title = isHome ? getPropertyName() : labelText;
         document.querySelector('.page-title').textContent = title;
+        document.querySelectorAll('.page-actions').forEach(b => b.style.display = isHome ? 'none' : '');
       }
       showAlert(labelText);
     }
@@ -1547,8 +1533,9 @@
       btn.classList.add('active');
     }
 
-    // Init: set Home title to property name
+    // Init: set Home title to property name and hide page actions
     document.querySelector('.page-title').textContent = getPropertyName();
+    document.querySelectorAll('.page-actions').forEach(b => b.style.display = 'none');
   </script>
 </body>
 </html>
