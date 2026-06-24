@@ -359,6 +359,61 @@
     .sidebar.collapsed .more-btn { opacity: 0; max-height: 0; padding: 0; pointer-events: none; }
     .more-btn-dot { display: inline-block; width: 11px; height: 11px; border-radius: 50%; background: var(--error); border: 1.5px solid var(--bg-paper); flex-shrink: 0; margin-left: 2px; }
 
+    /* Collapsed-only "..." overflow item */
+    .nav-more-dot {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      margin: 2px auto;
+      cursor: pointer;
+      color: var(--text-secondary);
+      font-size: 20px;
+      transition: background 0.15s;
+      flex-shrink: 0;
+      position: relative;
+    }
+    .nav-more-dot:hover { background: var(--hover-overlay); }
+    .sidebar.collapsed .nav-more-dot { display: flex; }
+    .nav-more-dot-badge {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--error);
+      border: 1.5px solid var(--bg-paper);
+    }
+
+    /* Collapsed-overflow floating panel (reuses more-panel styles) */
+    .collapsed-more-panel {
+      position: fixed;
+      z-index: 600;
+      background: var(--bg-paper);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.28);
+      min-width: 240px;
+      max-height: 70vh;
+      overflow-y: auto;
+      padding: 4px 0;
+      display: none;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .collapsed-more-panel.open { display: block; }
+    .collapsed-more-panel .more-panel-item { height: 36px; }
+    .collapsed-more-section-label {
+      padding: 10px 16px 4px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+    }
+
     /* Nav item tooltips handled by JS (#stip) — no CSS pseudo-element needed */
 
     /* Bottom bar */
@@ -603,7 +658,214 @@
     .prop-dropdown-item:hover .cluster-info-icon { opacity: 0.7; }
 
     /* Topbar icon buttons (24px icons) */
-    .topbar-actions { display: flex; align-items: center; gap: 16px; }
+    .topbar-actions { display: none; }
+
+    /* ─── Date picker dropdown ───────────────────────────────────────── */
+    .date-picker-dropdown {
+      display: none;
+      position: fixed;
+      top: 64px;
+      background: var(--bg-paper);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.28);
+      z-index: 2000;
+      min-width: 580px;
+      padding: 0;
+      overflow: hidden;
+      animation: ctx-in 0.12s ease;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .date-picker-dropdown.open { display: block; }
+
+    /* Quick-select pills */
+    .dp-presets {
+      display: flex;
+      gap: 6px;
+      padding: 14px 16px 12px;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+    .dp-preset-btn {
+      padding: 4px 12px;
+      border-radius: 100px;
+      border: 1.5px solid var(--border);
+      background: transparent;
+      font-size: 12px;
+      font-weight: 500;
+      font-family: 'Lato', sans-serif;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: border-color 0.12s, background 0.12s, color 0.12s;
+      white-space: nowrap;
+    }
+    .dp-preset-btn:hover { border-color: var(--active-accent); color: var(--active-accent); }
+    .dp-preset-btn.active { border-color: var(--active-accent); background: var(--active-bg); color: var(--active-accent); font-weight: 600; }
+
+    /* Calendars */
+    .dp-calendars {
+      display: flex;
+      gap: 0;
+      padding: 12px 16px 8px;
+    }
+    .dp-month {
+      flex: 1;
+      min-width: 0;
+    }
+    .dp-month + .dp-month { border-left: 1px solid var(--border); padding-left: 16px; margin-left: 4px; }
+    .dp-month-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .dp-month-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    .dp-nav-btn {
+      width: 26px; height: 26px;
+      border: none; background: transparent;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-secondary);
+      transition: background 0.12s;
+    }
+    .dp-nav-btn:hover { background: var(--hover-overlay); color: var(--text-primary); }
+    .dp-nav-btn .ms { font-size: 18px; }
+    .dp-nav-btn.hidden { visibility: hidden; pointer-events: none; }
+    .dp-weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      margin-bottom: 4px;
+    }
+    .dp-wd {
+      text-align: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      padding: 2px 0;
+      letter-spacing: 0.04em;
+    }
+    .dp-days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 1px 0;
+    }
+    .dp-day {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 32px;
+      font-size: 12px;
+      font-family: 'Lato', sans-serif;
+      color: var(--text-primary);
+      cursor: pointer;
+      border-radius: 50%;
+      transition: background 0.1s, color 0.1s;
+      user-select: none;
+    }
+    .dp-day:hover:not(.dp-day-other):not(.dp-day-disabled) { background: var(--hover-overlay); }
+    .dp-day-other { color: var(--text-secondary); opacity: 0.35; pointer-events: none; }
+    .dp-day-disabled { opacity: 0.25; pointer-events: none; }
+    .dp-day-today::after {
+      content: '';
+      position: absolute;
+      bottom: 3px; left: 50%;
+      transform: translateX(-50%);
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: var(--active-accent);
+    }
+    .dp-day-start, .dp-day-end {
+      background: var(--active-accent) !important;
+      color: #fff !important;
+      border-radius: 50% !important;
+      z-index: 1;
+    }
+    .dp-day-start::after, .dp-day-end::after { display: none; }
+    /* Range fill: extend bg behind cells */
+    .dp-day-in-range {
+      background: var(--active-bg);
+      border-radius: 0;
+      color: var(--active-accent);
+    }
+    /* Caps: start gets right-side fill, end gets left-side fill */
+    .dp-day-range-start-cap {
+      background: linear-gradient(to right, transparent 50%, var(--active-bg) 50%);
+      border-radius: 50% 0 0 50%;
+    }
+    .dp-day-range-start-cap.dp-day-start { background: var(--active-accent) !important; border-radius: 50% !important; }
+    .dp-day-range-end-cap {
+      background: linear-gradient(to left, transparent 50%, var(--active-bg) 50%);
+      border-radius: 0 50% 50% 0;
+    }
+    .dp-day-range-end-cap.dp-day-end { background: var(--active-accent) !important; border-radius: 50% !important; }
+    /* Start+end same day */
+    .dp-day-start.dp-day-end { border-radius: 50% !important; }
+
+    /* Footer */
+    .dp-footer {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      padding: 10px 16px 14px;
+      border-top: 1px solid var(--border);
+    }
+    .dp-selected-label {
+      flex: 1;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    /* ─── Right rail ─────────────────────────────────────────────────── */
+    .right-rail {
+      width: 48px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px 0;
+      gap: 4px;
+      border-left: 1px solid var(--border);
+      background: var(--sidebar-bg);
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    /* Left-side tooltip for right rail buttons */
+    [data-tooltip][data-tooltip-pos="left"]::after {
+      right: calc(100% + 8px);
+      top: 50%;
+      left: auto;
+      transform: translateY(-50%);
+      white-space: nowrap;
+    }
+
+    /* Notification chip on rail buttons */
+    .rail-badge {
+      position: absolute;
+      top: -3px;
+      right: -3px;
+      min-width: 16px;
+      height: 16px;
+      border-radius: 8px;
+      background: var(--error);
+      color: var(--error-contrast);
+      font-size: 10px;
+      font-weight: 700;
+      font-family: 'Lato', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 3px;
+      border: 1.5px solid var(--sidebar-bg);
+      pointer-events: none;
+      line-height: 1;
+    }
 
     .icon-btn-lg {
       position: relative;
@@ -617,27 +879,22 @@
       justify-content: center;
       color: var(--icon-color);
       transition: background 0.15s;
+      flex-shrink: 0;
     }
     .icon-btn-lg:hover { background: var(--hover-overlay); }
     .icon-btn-lg .ms { font-size: 24px; color: var(--icon-color); }
 
     .ai-btn {
-      width: auto;
-      padding: 0 14px 0 10px;
-      gap: 6px;
+      width: 34px;
+      height: 34px;
+      padding: 0;
       background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
       box-shadow: 0 2px 10px rgba(124, 58, 237, 0.45);
       transition: box-shadow 0.2s, filter 0.2s;
     }
     .ai-btn:hover { background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%); filter: brightness(1.12); box-shadow: 0 4px 16px rgba(124, 58, 237, 0.6); }
     .ai-btn .ms { color: #fff !important; }
-    .ai-btn-label {
-      font-size: 13px;
-      font-weight: 500;
-      color: #fff;
-      letter-spacing: 0.25px;
-      white-space: nowrap;
-    }
+    .ai-btn-label { display: none; }
     [data-theme="dark"] .ai-btn {
       background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
       box-shadow: 0 2px 12px rgba(168, 85, 247, 0.55);
@@ -731,6 +988,360 @@
       display: none;
     }
     .page-tab.active .page-tab-indicator { display: block; }
+    /* Editable tab label */
+    .page-tab-label[contenteditable="true"] {
+      outline: none;
+      border-radius: 4px;
+      padding: 0 4px;
+      margin: 0 -4px;
+      background: var(--hover-overlay);
+      min-width: 40px;
+      cursor: text;
+      box-shadow: 0 0 0 2px var(--active-accent);
+    }
+
+    /* Empty dashboard state */
+    .dash-empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 64px 24px;
+      flex: 1;
+      text-align: center;
+    }
+    .dash-empty-icon {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      background: var(--hover-overlay);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .dash-empty-icon .ms { font-size: 28px; color: var(--text-secondary); }
+    .dash-empty-title {
+      font-size: 16px; font-weight: 600;
+      color: var(--text-primary);
+      margin: 0;
+    }
+    .dash-empty-sub {
+      font-size: 13px; color: var(--text-secondary);
+      margin: -8px 0 0;
+      max-width: 280px;
+      line-height: 1.5;
+    }
+    .dash-empty-cards {
+      display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
+      margin-top: 4px;
+    }
+    .dash-empty-card {
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+      padding: 20px 24px;
+      width: 140px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      background: var(--bg-paper);
+      cursor: pointer;
+      transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+      font-family: 'Lato', sans-serif;
+      text-align: center;
+    }
+    .dash-empty-card:hover {
+      border-color: var(--active-accent);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+    }
+    .dash-empty-card-icon {
+      width: 40px; height: 40px;
+      border-radius: 8px;
+      background: var(--hover-overlay);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .dash-empty-card-icon .ms { font-size: 22px; color: var(--active-accent); }
+    .dash-empty-card-label {
+      font-size: 13px; font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.3;
+    }
+    .dash-empty-card.menu-open {
+      border-color: var(--active-accent);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+    }
+
+    /* Widget picker dropdown */
+    .widget-menu {
+      position: fixed;
+      background: var(--bg-paper);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.22);
+      padding: 6px 0;
+      min-width: 232px;
+      max-height: 320px;
+      overflow-y: auto;
+      z-index: 9999;
+      animation: ctx-in 0.1s ease;
+    }
+    .widget-menu-search {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin: 6px 8px 4px;
+      padding: 5px 10px;
+      background: var(--hover-overlay);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+    }
+    .widget-menu-search .ms { font-size: 16px; color: var(--text-secondary); flex-shrink: 0; }
+    .widget-menu-search input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      font-size: 13px;
+      font-family: 'Lato', sans-serif;
+      color: var(--text-primary);
+      outline: none;
+    }
+    .widget-menu-search input::placeholder { color: var(--text-secondary); }
+    .widget-menu-empty {
+      padding: 10px 14px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+    .widget-menu-header {
+      padding: 8px 14px 4px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+    }
+    .widget-menu-item {
+      display: flex;
+      align-items: center;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-family: 'Lato', sans-serif;
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: background 0.1s;
+      user-select: none;
+    }
+    .widget-menu-item:hover { background: var(--hover-overlay); }
+
+    /* Tile picker (2-step: category → items) */
+    .tile-picker {
+      position: fixed;
+      background: var(--bg-paper);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      box-shadow: 0 6px 28px rgba(0,0,0,0.26);
+      z-index: 9999;
+      animation: ctx-in 0.12s ease;
+      overflow: hidden;
+    }
+    .tile-picker-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 14px 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .tile-picker-back {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--active-accent);
+      font-size: 13px;
+      font-weight: 600;
+      font-family: 'Lato', sans-serif;
+      padding: 0;
+      margin-right: 4px;
+    }
+    .tile-picker-back:hover { opacity: 0.8; }
+    .tile-picker-back .ms { font-size: 16px; }
+    .tile-picker-title {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+    }
+    /* Category step */
+    .tile-picker-cats {
+      display: flex;
+      flex-direction: column;
+      padding: 8px 0;
+    }
+    .tile-picker-cat {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 16px;
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+    .tile-picker-cat:hover { background: var(--hover-overlay); }
+    .tile-picker-cat-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: var(--active-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .tile-picker-cat-icon .ms { font-size: 18px; color: var(--active-accent); }
+    .tile-picker-cat-text { display: flex; flex-direction: column; gap: 2px; }
+    .tile-picker-cat-label { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+    .tile-picker-cat-count { font-size: 11px; color: var(--text-secondary); }
+    /* Items step */
+    .tile-picker-search {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin: 6px 8px 4px;
+      padding: 5px 10px;
+      background: var(--hover-overlay);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+    }
+    .tile-picker-search .ms { font-size: 16px; color: var(--text-secondary); flex-shrink: 0; }
+    .tile-picker-search input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      font-size: 13px;
+      font-family: 'Lato', sans-serif;
+      color: var(--text-primary);
+      outline: none;
+    }
+    .tile-picker-search input::placeholder { color: var(--text-secondary); }
+    .tile-picker-empty {
+      padding: 10px 16px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+    .tile-picker-items {
+      max-height: 300px;
+      overflow-y: auto;
+      padding: 6px 0;
+    }
+    .tile-picker-item {
+      padding: 8px 16px;
+      font-size: 13px;
+      color: var(--text-primary);
+      font-family: 'Lato', sans-serif;
+      cursor: pointer;
+      transition: background 0.1s;
+      user-select: none;
+    }
+    .tile-picker-item:hover { background: var(--hover-overlay); }
+
+    .tab-reset-btn {
+      font-family: 'Lato', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 3px 10px;
+      cursor: pointer;
+      white-space: nowrap;
+      margin-right: 4px;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .tab-reset-btn:hover { color: var(--text-primary); border-color: var(--text-secondary); }
+
+    /* Tab context menu */
+    .tab-ctx-menu {
+      position: fixed;
+      background: var(--bg-paper);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+      padding: 4px 0;
+      min-width: 168px;
+      z-index: 9999;
+      animation: ctx-in 0.1s ease;
+    }
+    @keyframes ctx-in {
+      from { opacity: 0; transform: scale(0.96) translateY(-4px); }
+      to   { opacity: 1; transform: scale(1)    translateY(0); }
+    }
+    .tab-ctx-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-family: 'Lato', sans-serif;
+      color: var(--text-primary);
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.1s;
+    }
+    .tab-ctx-item:hover { background: var(--hover-overlay); }
+    .tab-ctx-item .ms { font-size: 17px; color: var(--text-secondary); }
+    .tab-ctx-item.danger { color: var(--error); }
+    .tab-ctx-item.danger .ms { color: var(--error); }
+    /* Hide add/delete controls on system dashboards; keep resize + drag */
+    .dashboard[data-type="system"] .add-btn { display: none !important; }
+    .dashboard[data-type="system"] .tile-del-btn { display: none !important; pointer-events: none !important; }
+
+    .tab-ctx-sep {
+      height: 1px;
+      background: var(--border);
+      margin: 4px 0;
+    }
+
+    /* Confirmation dialog */
+    .confirm-backdrop {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 10000;
+      display: flex; align-items: center; justify-content: center;
+      animation: fade-in 0.15s ease;
+    }
+    @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+    .confirm-dialog {
+      background: var(--bg-paper);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      width: 320px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      animation: dialog-in 0.15s ease;
+    }
+    @keyframes dialog-in {
+      from { opacity: 0; transform: scale(0.95) translateY(8px); }
+      to   { opacity: 1; transform: scale(1)    translateY(0); }
+    }
+    .confirm-title {
+      font-size: 16px; font-weight: 700;
+      color: var(--text-primary); margin: 0 0 8px;
+    }
+    .confirm-body {
+      font-size: 13px; color: var(--text-secondary);
+      margin: 0 0 24px; line-height: 1.5;
+    }
+    .confirm-actions {
+      display: flex; justify-content: flex-end; gap: 8px;
+    }
+    .confirm-btn {
+      font-family: 'Lato', sans-serif; font-size: 13px; font-weight: 600;
+      padding: 7px 16px; border-radius: 6px; cursor: pointer;
+      border: 1px solid var(--border); transition: background 0.15s, color 0.15s;
+    }
+    .confirm-btn.cancel { background: none; color: var(--text-primary); }
+    .confirm-btn.cancel:hover { background: var(--hover-overlay); }
+    .confirm-btn.destructive { background: var(--error); color: #fff; border-color: var(--error); }
+    .confirm-btn.destructive:hover { filter: brightness(1.1); }
     .tab-icon-btn {
       display: flex;
       align-items: center;
@@ -865,12 +1476,280 @@
     .btn-contained:hover { filter: brightness(0.92); }
     .btn-contained .ms { font-size: 20px; color: var(--primary-contrast); }
 
-    /* Page body (empty for now) */
+    /* Page body */
     .page-body {
       flex: 1;
-      background: var(--bg-paper);
+      min-height: 0;
+      overflow-y: auto;
+      background: var(--bg-default);
       transition: background 0.2s;
     }
+
+    /* ─── Dashboard grid ─────────────────────────────────────────── */
+    .dashboard {
+      padding: 8px 0 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      box-sizing: border-box;
+      min-height: 100%;
+    }
+
+    .dash-row {
+      display: flex;
+      flex-shrink: 0;
+    }
+
+    /* Edge strips: left & right ends of every row; contain the edge "+" buttons */
+    .row-edge {
+      width: 16px;
+      flex-shrink: 0;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .row-edge .add-btn {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .dash-row:hover .row-edge .add-btn { display: flex; }
+
+    .dash-tile {
+      background: var(--bg-paper);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      min-width: 220px;
+      max-width: 100%;
+      min-height: 120px;
+      overflow: hidden;
+      position: relative;
+      flex-shrink: 1;
+      transition: box-shadow 0.15s, opacity 0.22s, flex-basis 0.28s, min-width 0.28s, flex-grow 0.28s;
+      cursor: grab;
+      user-select: none;
+    }
+    .dash-tile:active { cursor: grabbing; }
+    .dash-tile.dragging { opacity: 0.35; }
+    .dash-tile.drop-left  { box-shadow: -3px 0 0 0 var(--active-accent); }
+    .dash-tile.drop-right { box-shadow:  3px 0 0 0 var(--active-accent); }
+    /* Remove animation: fade then collapse */
+    .dash-tile.tile-removing {
+      opacity: 0 !important;
+      flex-basis: 0px !important;
+      min-width: 0px !important;
+      flex-grow: 0 !important;
+      pointer-events: none;
+      transition: opacity 0.18s ease, flex-basis 0.26s 0.14s ease, min-width 0.26s 0.14s ease, flex-grow 0.26s 0.14s ease !important;
+    }
+    .tile-del-btn {
+      position: absolute; top: 7px; right: 7px;
+      width: 24px; height: 24px;
+      border-radius: 4px;
+      border: none;
+      background: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none;
+      z-index: 10;
+      transition: opacity 0.15s, background 0.15s, color 0.15s;
+      padding: 0;
+    }
+    .tile-del-btn .ms { font-size: 16px; }
+    .dash-tile:hover .tile-del-btn { opacity: 1; pointer-events: auto; }
+    .tile-del-btn:hover { background: var(--error); color: var(--error-contrast); }
+
+    /* ── Resize handles ── */
+    .rh-v {
+      width: 10px;
+      flex-shrink: 0;
+      cursor: col-resize;
+      position: relative;
+      z-index: 10;
+    }
+    .rh-v::after {
+      content: '';
+      position: absolute;
+      top: 12px; bottom: 12px;
+      left: 4px; width: 2px;
+      background: var(--active-accent);
+      border-radius: 2px;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    .rh-v:hover::after, .rh-v.active::after { opacity: 1; }
+
+    .rh-h {
+      height: 10px;
+      flex-shrink: 0;
+      cursor: row-resize;
+      position: relative;
+      z-index: 10;
+    }
+    .rh-h::after {
+      content: '';
+      position: absolute;
+      left: 12px; right: 12px;
+      top: 4px; height: 2px;
+      background: var(--active-accent);
+      border-radius: 2px;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    .rh-h:hover::after, .rh-h.active::after { opacity: 1; }
+
+    /* Top-edge zone — visible in custom dashboards, hidden in system ones */
+    .rh-h.rh-h-top { cursor: default; height: 0; overflow: hidden; }
+    .rh-h.rh-h-top::after { display: none; }
+    .dashboard[data-type="custom"] .rh-h-top { height: 10px; overflow: visible; }
+    .dashboard[data-type="custom"] .rh-h-top:hover .add-btn { display: flex; }
+    .dashboard.drag-active .rh-h.rh-h-top { height: 28px; overflow: visible; }
+
+    /* Hide the last rh-h add-btn when it directly precedes dash-end (dash-end already has one) */
+    .rh-h:has(+ .dash-end) .add-btn { display: none !important; }
+
+    /* ── Row drop zones (shown while dragging a tile) ── */
+    .dashboard.drag-active .rh-h {
+      height: 28px;
+      cursor: copy;
+      z-index: 20;
+    }
+    .dashboard.drag-active .rh-h::after { opacity: 0 !important; transition: none; }
+    .dashboard.drag-active .rh-h::before {
+      content: '';
+      position: absolute;
+      inset: 5px 24px;
+      border: 2px dashed var(--border);
+      border-radius: 6px;
+      opacity: 0.5;
+      pointer-events: none;
+      transition: border-color 0.12s, background 0.12s;
+    }
+    .dashboard.drag-active .rh-h.row-drop-hover::before {
+      border-color: var(--active-accent);
+      background: var(--active-bg);
+      opacity: 1;
+    }
+    .dashboard.drag-active .rh-h .add-btn { pointer-events: none; display: none !important; }
+    .dashboard.drag-active .dash-end {
+      border: 2px dashed var(--border);
+      border-radius: 6px;
+      cursor: copy;
+    }
+    .dashboard.drag-active .dash-end.row-drop-hover {
+      border-color: var(--active-accent);
+      background: var(--active-bg);
+    }
+    .dashboard.drag-active .dash-end .add-btn { pointer-events: none; display: none !important; }
+
+    /* ── Add tile / add row buttons ── */
+    .add-btn {
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: var(--bg-paper);
+      border: 1.5px solid var(--border);
+      color: var(--text-secondary);
+      font-size: 15px; line-height: 1;
+      cursor: pointer; padding: 0;
+      display: none;
+      align-items: center; justify-content: center;
+      z-index: 30;
+      font-family: 'Lato', sans-serif;
+      transition: background 0.12s, color 0.12s, border-color 0.12s, box-shadow 0.12s;
+      flex-shrink: 0;
+    }
+    .add-btn:hover {
+      background: var(--active-accent);
+      color: white;
+      border-color: var(--active-accent);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    }
+    /* Between tiles: centered inside rh-v, shown on row hover */
+    .rh-v .add-btn {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .dash-row:hover .rh-v .add-btn { display: flex; }
+    /* Between rows: centered inside rh-h, shown on rh-h hover */
+    .rh-h .add-btn {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .rh-h:hover .add-btn { display: flex; }
+    /* Dashboard bottom add-row strip */
+    .dash-end {
+      height: 28px; display: flex;
+      align-items: center; justify-content: center;
+      position: relative;
+    }
+    .dash-end:hover .add-btn { display: flex; }
+
+    /* ── Responsive: stack tiles when viewport is narrow ── */
+    @media (max-width: 540px) {
+      .dash-row { height: auto !important; flex-wrap: wrap; }
+      .dash-tile { min-height: 180px; }
+      .rh-v { display: none; }
+      .rh-h { display: none; }
+    }
+
+    /* ── Tile placeholder content ── */
+    .tp {
+      padding: 14px 16px;
+      height: 100%;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      pointer-events: none;
+    }
+    .tp-head { display: flex; flex-direction: column; gap: 3px; }
+    .tp-h1 { height: 10px; border-radius: 4px; background: var(--border); width: 38%; }
+    .tp-h2 { height: 7px; border-radius: 4px; background: var(--border); width: 22%; opacity: 0.55; }
+    .tp-title {
+      font-size: 13px; font-weight: 700;
+      color: var(--text-primary);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      line-height: 1.2;
+    }
+    .tp-updated {
+      font-size: 11px; color: var(--text-secondary);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
+    /* KPI variant */
+    .tp-kpi { display: flex; flex-direction: column; gap: 8px; flex: 1; justify-content: center; }
+    .tp-kpi-num { height: 30px; width: 72px; border-radius: 5px; background: color-mix(in srgb, var(--active-accent) 14%, transparent); }
+    .tp-kpi-bar { height: 5px; border-radius: 3px; background: var(--border); position: relative; overflow: hidden; }
+    .tp-kpi-bar::after { content: ''; position: absolute; top: 0; left: 0; height: 100%; border-radius: 3px; background: var(--active-accent); opacity: 0.45; }
+
+    /* Bar chart variant */
+    .tp-bars { display: flex; align-items: flex-end; gap: 5px; flex: 1; padding-top: 4px; }
+    .tp-bar { border-radius: 3px 3px 0 0; flex: 1; min-width: 6px; background: color-mix(in srgb, var(--active-accent) 22%, transparent); }
+    .tp-bar:nth-child(odd) { background: color-mix(in srgb, var(--active-accent) 38%, transparent); }
+
+    /* Line chart variant */
+    .tp-linechart { flex: 1; position: relative; min-height: 40px; overflow: hidden; }
+    .tp-linechart svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: block; }
+
+    /* Metric list variant */
+    .tp-list { display: flex; flex-direction: column; gap: 9px; flex: 1; justify-content: center; }
+    .tp-list-row { display: flex; justify-content: space-between; align-items: center; }
+    .tp-list-lbl { height: 8px; border-radius: 4px; background: var(--border); }
+    .tp-list-val { height: 8px; border-radius: 4px; background: color-mix(in srgb, var(--active-accent) 28%, transparent); }
+
+    /* Table variant */
+    .tp-table { display: flex; flex-direction: column; gap: 0; flex: 1; min-height: 0; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
+    .tp-table-hd { height: 26px; background: var(--hover-overlay); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 10px; gap: 8px; }
+    .tp-table-hd-cell { height: 7px; border-radius: 3px; background: var(--border); }
+    .tp-table-row { height: 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 10px; gap: 8px; }
+    .tp-table-row:last-child { border-bottom: none; }
+    .tp-table-cell { height: 6px; border-radius: 3px; background: var(--border); opacity: 0.6; }
+
+    /* Donut variant */
+    .tp-donut { flex: 1; display: flex; align-items: center; justify-content: center; }
+    .tp-donut svg { width: 70%; max-width: 90px; height: auto; display: block; }
 
     /* ─── Tooltips ────────────────────────────────────────────────── */
     [data-tooltip] {
@@ -1152,6 +2031,11 @@
       </div>
     </div>
 
+    <!-- Collapsed "..." overflow item — visible only when sidebar is collapsed -->
+    <div class="nav-more-dot" id="nav-more-dot" data-nav-tooltip="More" onclick="toggleCollapsedMorePanel(this)">
+      <span class="ms">more_horiz</span>
+    </div>
+
     </div><!-- /.nav-list -->
 
     <!-- Resize handle -->
@@ -1187,8 +2071,8 @@
         <!-- Property selector -->
         <div class="select-wrap" id="prop-select-wrap" onclick="togglePropertyDropdown()">
           <div class="select-inner" id="prop-select-inner">
-            <span class="ms ms-filled select-start" style="font-size:24px">apartment</span>
-            <span class="select-value" id="prop-select-value">Karina City Centre Hotel</span>
+            <span class="ms ms-filled select-start" id="prop-select-icon" style="font-size:24px">language</span>
+            <span class="select-value" id="prop-select-value">All Properties</span>
             <span class="ms ms-filled select-arrow">arrow_drop_down</span>
           </div>
           <span class="select-label">Property</span>
@@ -1196,26 +2080,18 @@
         <div class="prop-dropdown" id="prop-dropdown"></div>
 
         <!-- Stay dates selector -->
-        <div class="select-wrap">
-          <div class="select-inner">
+        <div class="select-wrap" id="date-select-wrap">
+          <div class="select-inner" id="date-select-inner">
             <span class="ms ms-filled select-start" style="font-size:24px">calendar_today</span>
-            <span class="select-value">Next 30 days</span>
+            <span class="select-value" id="date-select-value">Next 30 days</span>
             <span class="ms ms-filled select-arrow">arrow_drop_down</span>
           </div>
           <span class="select-label">Stay Dates</span>
         </div>
+        <div class="date-picker-dropdown" id="date-picker-dropdown"></div>
 
       </div>
 
-      <div class="topbar-actions">
-        <button class="icon-btn-lg" data-tooltip="Metrics Calendar" data-tooltip-pos="bottom">
-          <span class="ms">calendar_today</span>
-        </button>
-        <button class="icon-btn-lg ai-btn">
-          <span class="ms ms-filled">auto_awesome</span>
-          <span class="ai-btn-label">AI Assistant</span>
-        </button>
-      </div>
     </div>
 
     <!-- Page content -->
@@ -1247,10 +2123,11 @@
             <span class="page-tab-label">Insights</span>
             <div class="page-tab-indicator"></div>
           </button>
-          <button class="tab-icon-btn" data-tooltip="Add tab" data-tooltip-pos="bottom">
+          <button class="tab-icon-btn" data-tooltip="New Dashboard" data-tooltip-pos="bottom-center" onclick="addNewTab()">
             <span class="ms">add</span>
           </button>
         </div>
+        <button id="tab-reset-btn" class="tab-reset-btn" onclick="resetDashboard()" style="display:none">Reset to default</button>
         <button class="tab-icon-btn" data-tooltip="More options" data-tooltip-pos="bottom">
           <span class="ms">more_vert</span>
         </button>
@@ -1275,8 +2152,21 @@
 
   </div>
 
+  <!-- ── Right rail ───────────────────────────────────────────────── -->
+  <div class="right-rail">
+    <button class="icon-btn-lg" data-tooltip="Metrics Calendar" data-tooltip-pos="left">
+      <span class="ms">calendar_today</span>
+    </button>
+    <button class="icon-btn-lg ai-btn" data-tooltip="AI Assistant" data-tooltip-pos="left">
+      <span class="ms ms-filled">auto_awesome</span>
+      <span class="rail-badge">2</span>
+    </button>
+  </div>
+
   <!-- Floating "more" panel -->
   <div id="more-panel" class="more-panel"></div>
+  <!-- Collapsed nav overflow panel -->
+  <div id="collapsed-more-panel" class="collapsed-more-panel"></div>
   <div id="cluster-tip" class="cluster-tip"></div>
 
   <script>
@@ -1371,6 +2261,60 @@
       morePanel.classList.remove('open');
       activeMoreBtn = null;
     }
+
+    /* ── Collapsed nav "..." overflow panel ─────────────────────────── */
+    const collapsedMorePanel = document.getElementById('collapsed-more-panel');
+    let collapsedMoreOpen = false;
+
+    function toggleCollapsedMorePanel(dotEl) {
+      if (collapsedMoreOpen) { closeCollapsedMorePanel(); return; }
+      collapsedMoreOpen = true;
+
+      // Build combined list with section headers
+      const sections = [
+        { key: 'operate', label: 'Operate' },
+        { key: 'analyze', label: 'Analyze' },
+      ];
+      collapsedMorePanel.innerHTML = sections.map(({ key, label }) =>
+        `<div class="collapsed-more-section-label">${label}</div>` +
+        MORE_ITEMS[key].map(({ icon, label: l, badge }) =>
+          `<div class="more-panel-item" onclick="selectMoreItem(this,'${l.replace(/'/g,"\\'")}'); closeCollapsedMorePanel();">
+            <span class="ms">${icon}</span>
+            <span class="more-panel-label">${l}</span>
+            ${badge ? `<span class="more-panel-badge">${badge}</span>` : ''}
+          </div>`
+        ).join('')
+      ).join('');
+
+      // Position to the right of the dot, vertically near it
+      const dotRect = dotEl.getBoundingClientRect();
+      const sideRect = document.querySelector('.sidebar').getBoundingClientRect();
+      const gap = 8;
+      collapsedMorePanel.style.left = (sideRect.right + gap) + 'px';
+      collapsedMorePanel.classList.add('open');
+
+      // Align bottom of panel with dot position, but keep within viewport
+      const ph = collapsedMorePanel.offsetHeight;
+      let top = dotRect.bottom - ph;
+      if (top < 8) top = 8;
+      if (top + ph > window.innerHeight - 8) top = Math.max(8, window.innerHeight - ph - 8);
+      collapsedMorePanel.style.top = top + 'px';
+    }
+
+    function closeCollapsedMorePanel() {
+      collapsedMorePanel.classList.remove('open');
+      collapsedMoreOpen = false;
+    }
+
+    // Add badge dot if any hidden items have badges
+    (function() {
+      const hasBadge = ['operate','analyze'].some(k => MORE_ITEMS[k].some(i => i.badge));
+      if (hasBadge) {
+        const dot = document.createElement('span');
+        dot.className = 'nav-more-dot-badge';
+        document.getElementById('nav-more-dot').appendChild(dot);
+      }
+    })();
 
     /* ── Notification alerts ─────────────────────────────────────── */
     const NOTIFICATIONS = {
@@ -1499,13 +2443,14 @@
     }
 
     document.addEventListener('click', e => {
-      if (!activeMoreBtn) return;
-      if (!morePanel.contains(e.target) && !e.target.closest('.more-btn'))
+      if (activeMoreBtn && !morePanel.contains(e.target) && !e.target.closest('.more-btn'))
         closeMorePanel();
+      if (collapsedMoreOpen && !collapsedMorePanel.contains(e.target) && !e.target.closest('#nav-more-dot'))
+        closeCollapsedMorePanel();
     });
 
     document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') closeMorePanel();
+      if (e.key === 'Escape') { closeMorePanel(); closeCollapsedMorePanel(); }
     });
     /* ── Sidebar tooltip (position:fixed — escapes overflow:hidden) ── */
     const stip = document.createElement('div');
@@ -1655,7 +2600,7 @@
       { id: 'c5', name: 'Urban Boutiques',         props: ['p1','p5','p6'] },
     ];
 
-    let selectedPropertyId = 'p1';
+    let selectedPropertyId = 'all';
 
     function buildPropertyDropdown() {
       const dd = document.getElementById('prop-dropdown');
@@ -1748,15 +2693,19 @@
 
     function selectProperty(id, type) {
       selectedPropertyId = id;
-      let label;
+      let label, icon;
       if (id === 'all') {
         label = 'All Properties';
+        icon = 'language';
       } else if (type === 'cluster') {
         label = CLUSTERS.find(c => c.id === id)?.name ?? '';
+        icon = 'workspaces';
       } else {
         label = PROPERTIES.find(p => p.id === id)?.name ?? '';
+        icon = 'apartment';
       }
       document.getElementById('prop-select-value').textContent = label;
+      document.getElementById('prop-select-icon').textContent = icon;
       // If currently on Home, update the page title too
       const activeNav = document.querySelector('.nav-item.active .nav-label');
       if (!activeNav || activeNav.textContent.trim() === 'Home') {
@@ -1771,6 +2720,243 @@
           !document.getElementById('prop-dropdown').contains(e.target)) {
         closePropertyDropdown();
       }
+    });
+
+    /* ── Stay-date picker ───────────────────────────────────────────── */
+    const PRESETS = [
+      { label: 'Next 7 days',   days: 7  },
+      { label: 'Next 14 days',  days: 14 },
+      { label: 'Next 30 days',  days: 30 },
+      { label: 'Next 60 days',  days: 60 },
+      { label: 'Next 90 days',  days: 90 },
+      { label: 'Next 180 days', days: 180 },
+    ];
+
+    // Today anchored at page-load time
+    const _today = (() => { const d = new Date(); d.setHours(0,0,0,0); return d; })();
+
+    function _addDays(d, n) {
+      const r = new Date(d); r.setDate(r.getDate() + n); return r;
+    }
+    function _ymd(d) { return d.toISOString().slice(0,10); }
+    function _sameDay(a, b) { return a && b && _ymd(a) === _ymd(b); }
+
+    // Committed range (shown in selector)
+    let _dpCommitted = { start: _today, end: _addDays(_today, 29), preset: 'Next 30 days' };
+    // Working range (inside open picker, before Apply)
+    let _dpWork = null;
+    // View months
+    let _dpViewYear = _today.getFullYear();
+    let _dpViewMonth = _today.getMonth(); // left month
+    // Hover day for range preview
+    let _dpHover = null;
+
+    function _formatRange(start, end) {
+      if (!start) return '';
+      const opts = { month: 'short', day: 'numeric' };
+      const sy = start.getFullYear(), ey = end ? end.getFullYear() : null;
+      const showYear = sy !== _today.getFullYear() || (ey && ey !== _today.getFullYear());
+      const fmt = d => d.toLocaleDateString('en-US', showYear ? { ...opts, year: 'numeric' } : opts);
+      return end ? `${fmt(start)} – ${fmt(end)}` : fmt(start);
+    }
+
+    function toggleDatePicker() {
+      const dd = document.getElementById('date-picker-dropdown');
+      if (dd.classList.contains('open')) { closeDatePicker(false); return; }
+      // Clone committed state into work
+      _dpWork = { start: _dpCommitted.start, end: _dpCommitted.end, preset: _dpCommitted.preset };
+      // Position view so left month contains the start date
+      _dpViewYear  = _dpWork.start.getFullYear();
+      _dpViewMonth = _dpWork.start.getMonth();
+      _dpHover = null;
+      renderDatePicker();
+      // Position dropdown below the selector
+      const wrap = document.getElementById('date-select-wrap');
+      const r = wrap.getBoundingClientRect();
+      dd.style.left = r.left + 'px';
+      dd.classList.add('open');
+      document.getElementById('date-select-inner').style.borderColor = 'var(--active-accent)';
+    }
+
+    function closeDatePicker(apply) {
+      const dd = document.getElementById('date-picker-dropdown');
+      dd.classList.remove('open');
+      document.getElementById('date-select-inner').style.borderColor = '';
+      if (apply && _dpWork) {
+        _dpCommitted = { ..._dpWork };
+        const label = _dpCommitted.preset || _formatRange(_dpCommitted.start, _dpCommitted.end);
+        document.getElementById('date-select-value').textContent = label;
+      }
+      _dpWork = null;
+    }
+
+    function _applyPreset(days, label) {
+      _dpWork.start  = new Date(_today);
+      _dpWork.end    = _addDays(_today, days - 1);
+      _dpWork.preset = label;
+      // Scroll left month to today
+      _dpViewYear  = _today.getFullYear();
+      _dpViewMonth = _today.getMonth();
+      _dpHover = null;
+      renderDatePicker();
+    }
+
+    function _dpClickDay(iso) {
+      const d = new Date(iso + 'T00:00:00');
+      if (!_dpWork.start || (_dpWork.start && _dpWork.end)) {
+        // Start fresh selection
+        _dpWork.start = d; _dpWork.end = null; _dpWork.preset = null;
+      } else {
+        // Set end (ensure start ≤ end)
+        if (d < _dpWork.start) { _dpWork.end = _dpWork.start; _dpWork.start = d; }
+        else { _dpWork.end = d; }
+        _dpWork.preset = null;
+      }
+      _dpHover = null;
+      renderDatePicker();
+    }
+
+    function _dpHoverDay(iso) {
+      if (_dpWork.start && !_dpWork.end) {
+        _dpHover = new Date(iso + 'T00:00:00');
+        renderDatePicker();
+      }
+    }
+
+    function renderDatePicker() {
+      const dd = document.getElementById('date-picker-dropdown');
+      const rangeEnd = _dpWork.end || _dpHover;
+
+      let html = '';
+
+      // Presets
+      html += '<div class="dp-presets">';
+      PRESETS.forEach(p => {
+        const active = _dpWork.preset === p.label ? ' active' : '';
+        html += `<button class="dp-preset-btn${active}" onclick="(function(){_applyPreset(${p.days},'${p.label}')})()">${p.label}</button>`;
+      });
+      html += '</div>';
+
+      // Two calendars
+      html += '<div class="dp-calendars">';
+      const rightYear  = _dpViewMonth === 11 ? _dpViewYear + 1 : _dpViewYear;
+      const rightMonth = _dpViewMonth === 11 ? 0 : _dpViewMonth + 1;
+      html += _renderMonth(_dpViewYear, _dpViewMonth, true, _dpWork.start, rangeEnd);
+      html += _renderMonth(rightYear,  rightMonth,  false, _dpWork.start, rangeEnd);
+      html += '</div>';
+
+      // Footer
+      const selLabel = _dpWork.start
+        ? (_dpWork.end ? _formatRange(_dpWork.start, _dpWork.end) : _formatRange(_dpWork.start, null) + ' — pick end date')
+        : 'Select start date';
+      html += `<div class="dp-footer">
+        <span class="dp-selected-label">${selLabel}</span>
+        <button class="btn-text" onclick="closeDatePicker(false)" style="font-size:13px">Cancel</button>
+        <button class="btn-contained" onclick="closeDatePicker(true)" ${!_dpWork.end ? 'disabled style="opacity:0.45;cursor:default"' : ''} style="font-size:13px;padding:6px 18px">Apply</button>
+      </div>`;
+
+      dd.innerHTML = html;
+
+      // Clear hover when mouse exits the entire calendar grid
+      const cals = dd.querySelector('.dp-calendars');
+      if (cals) {
+        cals.addEventListener('mouseleave', () => {
+          if (_dpWork && !_dpWork.end && _dpHover) {
+            _dpHover = null;
+            renderDatePicker();
+          }
+        });
+      }
+    }
+
+    function _renderMonth(year, month, isLeft, selStart, selEnd) {
+      const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+      const WDS = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+
+      // Normalize range so start ≤ end for rendering
+      let rStart = selStart, rEnd = selEnd;
+      if (rStart && rEnd && rEnd < rStart) { rStart = selEnd; rEnd = selStart; }
+
+      let html = '<div class="dp-month">';
+
+      // Nav header
+      const prevHidden = !isLeft ? ' hidden' : '';
+      const nextHidden =  isLeft ? ' hidden' : '';
+      html += `<div class="dp-month-nav">
+        <button class="dp-nav-btn${prevHidden}" onclick="_dpNav(-1)"><span class="ms">chevron_left</span></button>
+        <span class="dp-month-label">${MONTHS[month]} ${year}</span>
+        <button class="dp-nav-btn${nextHidden}" onclick="_dpNav(1)"><span class="ms">chevron_right</span></button>
+      </div>`;
+
+      // Weekday headers
+      html += '<div class="dp-weekdays">' + WDS.map(w => `<div class="dp-wd">${w}</div>`).join('') + '</div>';
+
+      // Days grid
+      const first = new Date(year, month, 1);
+      const startDow = first.getDay(); // 0=Sun
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const prevDays = new Date(year, month, 0).getDate();
+
+      html += '<div class="dp-days">';
+      // Leading padding (prev month)
+      for (let i = startDow - 1; i >= 0; i--) {
+        html += `<div class="dp-day dp-day-other">${prevDays - i}</div>`;
+      }
+      // Current month days
+      for (let d = 1; d <= daysInMonth; d++) {
+        const date = new Date(year, month, d);
+        const iso  = _ymd(date);
+        const isToday   = _sameDay(date, _today);
+        const isStart   = rStart && _sameDay(date, rStart);
+        const isEnd     = rEnd   && _sameDay(date, rEnd);
+        const inRange   = rStart && rEnd && date > rStart && date < rEnd;
+
+        let cls = 'dp-day';
+        if (isToday)  cls += ' dp-day-today';
+        if (isStart && isEnd) { cls += ' dp-day-start dp-day-end'; }
+        else if (isStart)     { cls += ' dp-day-start dp-day-range-start-cap'; }
+        else if (isEnd)       { cls += ' dp-day-range-end-cap dp-day-end'; }
+        else if (inRange)     { cls += ' dp-day-in-range'; }
+
+        html += `<div class="${cls}" data-iso="${iso}"
+          onmousedown="_dpClickDay('${iso}')"
+          onmouseenter="_dpHoverDay('${iso}')"
+        >${d}</div>`;
+      }
+      // Trailing padding
+      const total = startDow + daysInMonth;
+      const trailing = total % 7 === 0 ? 0 : 7 - (total % 7);
+      for (let i = 1; i <= trailing; i++) {
+        html += `<div class="dp-day dp-day-other">${i}</div>`;
+      }
+      html += '</div></div>';
+      return html;
+    }
+
+    function _dpNav(dir) {
+      _dpViewMonth += dir;
+      if (_dpViewMonth > 11) { _dpViewMonth = 0;  _dpViewYear++; }
+      if (_dpViewMonth < 0)  { _dpViewMonth = 11; _dpViewYear--; }
+      renderDatePicker();
+    }
+
+    // Init display label from default committed state
+    document.getElementById('date-select-value').textContent = _dpCommitted.preset || _formatRange(_dpCommitted.start, _dpCommitted.end);
+
+    // Wire toggle — stopPropagation so document outside-click doesn't immediately close
+    document.getElementById('date-select-wrap').addEventListener('click', e => {
+      e.stopPropagation();
+      toggleDatePicker();
+    });
+
+    // Clicks inside the dropdown stay inside
+    document.getElementById('date-picker-dropdown').addEventListener('click', e => e.stopPropagation());
+
+    // Close on outside click
+    document.addEventListener('click', e => {
+      const dd = document.getElementById('date-picker-dropdown');
+      if (!dd.classList.contains('open')) return;
+      if (!dd.contains(e.target)) closeDatePicker(false);
     });
 
     function getPropertyName() {
@@ -1792,19 +2978,1125 @@
         document.querySelector('.page-title').textContent = title;
         document.querySelectorAll('.page-actions').forEach(b => b.style.display = isHome ? 'none' : '');
         document.querySelector('.page-tabs').style.display = isHome ? '' : 'none';
+        const body = document.querySelector('.page-body');
+        if (isHome) {
+          renderDashboard(_currentTab);
+          // Re-expand sidebar when returning to Home
+          const colBtn = document.querySelector('.collapse-btn');
+          sidebar.classList.remove('collapsed');
+          sidebar.style.width = '';
+          colBtn.dataset.tooltip = 'Collapse';
+        } else {
+          saveCurrentDashboard();
+          body.innerHTML = '';
+          // Auto-collapse sidebar when leaving Home
+          const colBtn = document.querySelector('.collapse-btn');
+          if (!sidebar.classList.contains('collapsed')) {
+            sidebar.classList.add('collapsed');
+            sidebar.style.width = '';
+            colBtn.dataset.tooltip = 'Expand';
+            hideStip();
+          }
+        }
       }
       showAlert(labelText);
     }
 
+    // Keyed by unique tab ID → saved dashboard DOM node for custom tabs
+    const _customDashboards = {};
+    let _tabIdCounter = 0;
+    let _currentTabId = null;
+
+    function saveCurrentDashboard() {
+      if (SYSTEM_TABS.has(_currentTab)) return;
+      if (!_currentTabId) return;
+      const dash = document.querySelector('.page-body > .dashboard');
+      if (dash) {
+        _customDashboards[_currentTabId] = dash;
+        dash.remove(); // detach immediately so body.innerHTML='' can't touch it
+      }
+    }
+
     function selectTab(btn) {
+      saveCurrentDashboard();
       document.querySelectorAll('.page-tab').forEach(t => t.classList.remove('active'));
       btn.classList.add('active');
+      const label = btn.querySelector('.page-tab-label').textContent.trim();
+      _currentTab = label;
+      _currentTabId = btn.dataset.tabId || null;
+      const body = document.querySelector('.page-body');
+      if (SYSTEM_TABS.has(label)) {
+        renderDashboard(label);
+      } else if (_currentTabId && _customDashboards[_currentTabId]) {
+        body.innerHTML = '';
+        body.appendChild(_customDashboards[_currentTabId]);
+        document.getElementById('tab-reset-btn').style.display = 'none';
+      } else {
+        renderEmptyDashboard(label);
+      }
+    }
+
+    function renderEmptyDashboard(tabName) {
+      _currentTab = tabName;
+      const body = document.querySelector('.page-body');
+      body.innerHTML = '';
+      const empty = document.createElement('div');
+      empty.className = 'dash-empty';
+      empty.innerHTML = `
+        <div class="dash-empty-icon"><span class="ms">dashboard</span></div>
+        <p class="dash-empty-title">Your data will appear here</p>
+        <p class="dash-empty-sub">Add your first widget to start this view.</p>
+        <div class="dash-empty-cards">
+          <button class="dash-empty-card" onclick="openWidgetMenu(event, this, 'data-viz')">
+            <div class="dash-empty-card-icon"><span class="ms">bar_chart</span></div>
+            <span class="dash-empty-card-label">Data Visualization</span>
+          </button>
+          <button class="dash-empty-card" onclick="openWidgetMenu(event, this, 'reports')">
+            <div class="dash-empty-card-icon"><span class="ms">description</span></div>
+            <span class="dash-empty-card-label">Report</span>
+          </button>
+          <button class="dash-empty-card" onclick="openWidgetMenu(event, this, 'custom')">
+            <div class="dash-empty-card-icon"><span class="ms">tune</span></div>
+            <span class="dash-empty-card-label">Custom Report</span>
+          </button>
+        </div>`;
+      body.appendChild(empty);
+      document.getElementById('tab-reset-btn').style.display = 'none';
+    }
+
+    function addFirstTile(label) {
+      TAB_LAYOUTS[_currentTab] = [
+        { h: 200, tiles: [{ flex: 1, v: pickVariant(), title: label || 'Untitled' }] }
+      ];
+      renderDashboard(_currentTab);
+    }
+
+    function addNewTab() {
+      const tabName = 'Untitled';
+      const tabsList = document.querySelector('.page-tabs-list');
+      const addBtn = tabsList.querySelector('.tab-icon-btn');
+
+      // Create tab button
+      const tab = document.createElement('button');
+      tab.className = 'page-tab';
+      tab.dataset.tabId = ++_tabIdCounter;
+      tab.onclick = () => selectTab(tab);
+      const labelEl = document.createElement('span');
+      labelEl.className = 'page-tab-label';
+      labelEl.textContent = tabName;
+      const indicator = document.createElement('div');
+      indicator.className = 'page-tab-indicator';
+      tab.appendChild(labelEl);
+      tab.appendChild(indicator);
+      tabsList.insertBefore(tab, addBtn);
+
+      // Activate the new tab
+      selectTab(tab);
+
+      // Start editing the label immediately
+      startTabRename(labelEl);
+    }
+
+    function startTabRename(labelEl) {
+      labelEl.contentEditable = 'true';
+      labelEl.focus();
+      // Select all text
+      const range = document.createRange();
+      range.selectNodeContents(labelEl);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+
+      function commit() {
+        labelEl.contentEditable = 'false';
+        const newName = labelEl.textContent.trim() || 'Untitled';
+        labelEl.textContent = newName;
+        // Transfer TAB_LAYOUTS / _tabDirty keys if name changed (custom dashboards keyed by ID, no migration needed)
+        if (_currentTab !== newName) {
+          if (TAB_LAYOUTS[_currentTab]) { TAB_LAYOUTS[newName] = TAB_LAYOUTS[_currentTab]; delete TAB_LAYOUTS[_currentTab]; }
+          if (_tabDirty[_currentTab])   { _tabDirty[newName]   = _tabDirty[_currentTab];   delete _tabDirty[_currentTab]; }
+          _currentTab = newName;
+        }
+      }
+
+      labelEl.addEventListener('keydown', e => {
+        if (e.key === 'Enter') { e.preventDefault(); labelEl.blur(); }
+        if (e.key === 'Escape') { labelEl.textContent = labelEl.dataset.prev || 'Untitled'; labelEl.blur(); }
+      }, { once: false });
+
+      labelEl.addEventListener('blur', commit, { once: true });
+
+      // Prevent the tab's onclick from firing while editing
+      labelEl.addEventListener('mousedown', e => e.stopPropagation());
+    }
+
+    /* ── Widget picker menus ─────────────────────────────────────────── */
+    const WIDGET_MENUS = {
+      'data-viz': {
+        label: 'Data Visualization',
+        items: ['Alerts Summary', 'Highest/Lowest Variance', 'Booking & Performance', 'Financial Scorecard', 'Occupancy Over Time', 'Business Mix', 'Cumulative Booking Curve', 'Market Insights', 'Hotel Pickup', 'Group Business by Stage', 'Geo Source of Bookings']
+      },
+      'reports': {
+        label: 'Reports',
+        items: ['Daily Pace', 'Pace', 'Yielding Overview', 'Occupancy', 'Sellout', 'Rate Analysis', 'Room Type Analysis', 'Daily Booking Curves', 'Cumulative Booking Curves', 'Average Booking Curves', 'Competitor Rate', 'Competitor Rate Change', 'Rate Similarity Comparison', 'Financial Forecast', 'Performance vs. Budget', 'Market Segment & Room Type', 'Operations', 'Hotel Performance', 'Hotel Performance Chart', 'Website Activity', 'Lost Business', 'Net RevPAR Analysis', 'Total Revenue Dashboard', 'Profitability Overview', 'Generate Report']
+      },
+      'custom': {
+        label: 'My Custom Reports',
+        items: ['Q4 Revenue Analysis', 'Weekend Performance Tracker', 'Corporate Account Review', 'Holiday Season Forecast', 'OTA Channel Comparison', 'Group Bookings Pipeline', 'Long Stay Patterns', 'Rate Parity Audit', 'Loyalty Segment Performance', 'F&B Revenue Correlation', 'MICE Business Review', 'Year-over-Year Pickup', 'Shoulder Season Optimizer', 'Competitive Set Monitor', 'Revenue Manager Weekly']
+      }
+    };
+
+    let _widgetMenu = null;
+    let _widgetMenuCard = null;
+
+    function closeWidgetMenu() {
+      if (_widgetMenu) { _widgetMenu.remove(); _widgetMenu = null; }
+      if (_widgetMenuCard) { _widgetMenuCard.classList.remove('menu-open'); _widgetMenuCard = null; }
+    }
+
+    function openWidgetMenu(e, card, key) {
+      e.stopPropagation();
+      if (_widgetMenuCard === card) { closeWidgetMenu(); return; } // toggle
+      closeWidgetMenu();
+      const def = WIDGET_MENUS[key];
+      if (!def) return;
+
+      card.classList.add('menu-open');
+      _widgetMenuCard = card;
+
+      const menu = document.createElement('div');
+      menu.className = 'widget-menu';
+      _widgetMenu = menu;
+
+      const header = document.createElement('div');
+      header.className = 'widget-menu-header';
+      header.textContent = def.label;
+      menu.appendChild(header);
+
+      // Search input
+      const searchWrap = document.createElement('div');
+      searchWrap.className = 'widget-menu-search';
+      searchWrap.innerHTML = '<span class="ms">search</span>';
+      const searchInput = document.createElement('input');
+      searchInput.type = 'text';
+      searchInput.placeholder = 'Search…';
+      searchInput.autocomplete = 'off';
+      searchWrap.appendChild(searchInput);
+      menu.appendChild(searchWrap);
+
+      const emptyMsg = document.createElement('div');
+      emptyMsg.className = 'widget-menu-empty';
+      emptyMsg.textContent = 'No results';
+      emptyMsg.style.display = 'none';
+      menu.appendChild(emptyMsg);
+
+      function buildItem(label) {
+        const item = document.createElement('div');
+        item.className = 'widget-menu-item';
+        item.textContent = label;
+        item.addEventListener('mousedown', ev => {
+          ev.preventDefault();
+          closeWidgetMenu();
+          addFirstTile(label);
+        });
+        return item;
+      }
+      def.items.forEach(label => menu.appendChild(buildItem(label)));
+
+      searchInput.addEventListener('input', () => {
+        const q = searchInput.value.trim().toLowerCase();
+        let visible = 0;
+        menu.querySelectorAll('.widget-menu-item').forEach(el => {
+          const match = !q || el.textContent.toLowerCase().includes(q);
+          el.style.display = match ? '' : 'none';
+          if (match) visible++;
+        });
+        emptyMsg.style.display = visible === 0 ? '' : 'none';
+      });
+
+      document.body.appendChild(menu);
+      // Focus search after mount
+      requestAnimationFrame(() => searchInput.focus());
+
+      const cr = card.getBoundingClientRect();
+      const mw = menu.offsetWidth, mh = menu.offsetHeight;
+      let left = cr.left + cr.width / 2 - mw / 2;
+      let top = cr.bottom + 8;
+      if (left < 8) left = 8;
+      if (left + mw > window.innerWidth - 8) left = window.innerWidth - mw - 8;
+      if (top + mh > window.innerHeight - 8) top = cr.top - mh - 8;
+      menu.style.left = left + 'px';
+      menu.style.top = top + 'px';
+    }
+
+    /* ── Tile picker (2-step category → items) ──────────────────────── */
+    const TILE_PICKER_CATS = [
+      { key: 'data-viz', icon: 'bar_chart',    label: 'Data Visualization' },
+      { key: 'reports',  icon: 'description',  label: 'Reports' },
+      { key: 'custom',   icon: 'star',         label: 'My Custom Reports' },
+    ];
+
+    let _tilePicker = null;
+    let _tilePickerInsertFn = null;
+
+    function closeTilePicker() {
+      if (_tilePicker) { _tilePicker.remove(); _tilePicker = null; }
+      _tilePickerInsertFn = null;
+    }
+
+    function positionTilePicker(anchorRect) {
+      if (!_tilePicker) return;
+      const pw = _tilePicker.offsetWidth, ph = _tilePicker.offsetHeight;
+      // prefer below-right of anchor
+      let left = anchorRect.right + 8;
+      let top  = anchorRect.top;
+      if (left + pw > window.innerWidth - 8) left = anchorRect.left - pw - 8;
+      if (left < 8) left = 8;
+      if (top + ph > window.innerHeight - 8) top = Math.max(8, window.innerHeight - ph - 8);
+      _tilePicker.style.left = left + 'px';
+      _tilePicker.style.top  = top + 'px';
+    }
+
+    function openTilePicker(anchorRect, insertFn) {
+      closeTilePicker();
+      _tilePickerInsertFn = insertFn;
+
+      const picker = document.createElement('div');
+      picker.className = 'tile-picker';
+      _tilePicker = picker;
+      document.body.appendChild(picker);
+
+      showCategoryStep(picker, anchorRect);
+    }
+
+    function showCategoryStep(picker, anchorRect) {
+      picker.innerHTML = '';
+
+      const hdr = document.createElement('div');
+      hdr.className = 'tile-picker-header';
+      hdr.innerHTML = '<span class="tile-picker-title">Add Widget</span>';
+      picker.appendChild(hdr);
+
+      const cats = document.createElement('div');
+      cats.className = 'tile-picker-cats';
+
+      TILE_PICKER_CATS.forEach(({ key, icon, label }) => {
+        const items = WIDGET_MENUS[key] ? WIDGET_MENUS[key].items : [];
+        const row = document.createElement('div');
+        row.className = 'tile-picker-cat';
+        row.innerHTML = `
+          <div class="tile-picker-cat-icon"><span class="ms">${icon}</span></div>
+          <div class="tile-picker-cat-text">
+            <span class="tile-picker-cat-label">${label}</span>
+            <span class="tile-picker-cat-count">${items.length} widgets</span>
+          </div>
+          <span class="ms" style="margin-left:auto;color:var(--text-secondary);font-size:18px">chevron_right</span>`;
+        row.addEventListener('mousedown', ev => {
+          ev.preventDefault();
+          ev.stopPropagation();
+          showItemStep(picker, anchorRect, key, label);
+        });
+        cats.appendChild(row);
+      });
+
+      picker.appendChild(cats);
+      positionTilePicker(anchorRect);
+    }
+
+    function showItemStep(picker, anchorRect, key, catLabel) {
+      picker.innerHTML = '';
+
+      const def = WIDGET_MENUS[key];
+      if (!def) return;
+
+      const hdr = document.createElement('div');
+      hdr.className = 'tile-picker-header';
+      const backBtn = document.createElement('button');
+      backBtn.className = 'tile-picker-back';
+      backBtn.innerHTML = '<span class="ms">arrow_back_ios</span>';
+      backBtn.title = 'Back';
+      backBtn.addEventListener('mousedown', ev => {
+        ev.preventDefault();
+        ev.stopPropagation();
+        showCategoryStep(picker, anchorRect);
+      });
+      const title = document.createElement('span');
+      title.className = 'tile-picker-title';
+      title.textContent = catLabel;
+      hdr.appendChild(backBtn);
+      hdr.appendChild(title);
+      picker.appendChild(hdr);
+
+      // Search input
+      const searchWrap = document.createElement('div');
+      searchWrap.className = 'tile-picker-search';
+      searchWrap.innerHTML = '<span class="ms">search</span>';
+      const searchInput = document.createElement('input');
+      searchInput.type = 'text';
+      searchInput.placeholder = 'Search…';
+      searchInput.autocomplete = 'off';
+      searchWrap.appendChild(searchInput);
+      picker.appendChild(searchWrap);
+
+      const emptyMsg = document.createElement('div');
+      emptyMsg.className = 'tile-picker-empty';
+      emptyMsg.textContent = 'No results';
+      emptyMsg.style.display = 'none';
+
+      const list = document.createElement('div');
+      list.className = 'tile-picker-items';
+
+      def.items.forEach(label => {
+        const item = document.createElement('div');
+        item.className = 'tile-picker-item';
+        item.textContent = label;
+        item.addEventListener('mousedown', ev => {
+          ev.preventDefault();
+          if (_tilePickerInsertFn) _tilePickerInsertFn(label);
+          closeTilePicker();
+        });
+        list.appendChild(item);
+      });
+
+      picker.appendChild(list);
+      picker.appendChild(emptyMsg);
+
+      searchInput.addEventListener('input', () => {
+        const q = searchInput.value.trim().toLowerCase();
+        let visible = 0;
+        list.querySelectorAll('.tile-picker-item').forEach(el => {
+          const match = !q || el.textContent.toLowerCase().includes(q);
+          el.style.display = match ? '' : 'none';
+          if (match) visible++;
+        });
+        emptyMsg.style.display = visible === 0 ? '' : 'none';
+      });
+
+      positionTilePicker(anchorRect);
+      requestAnimationFrame(() => searchInput.focus());
+    }
+
+    // Close tile picker on outside click
+    document.addEventListener('mousedown', e => {
+      if (_tilePicker && !_tilePicker.contains(e.target) && !e.target.closest('.add-btn'))
+        closeTilePicker();
+    }, true);
+
+    /* ── Tab context menu ───────────────────────────────────────────── */
+    let _defaultTab = 'Priorities';
+    let _ctxMenu = null;
+
+    function closeCtxMenu() {
+      if (_ctxMenu) { _ctxMenu.remove(); _ctxMenu = null; }
+    }
+
+    function openTabCtxMenu(e, tabBtn) {
+      e.preventDefault();
+      closeCtxMenu();
+
+      const labelText = tabBtn.querySelector('.page-tab-label').textContent.trim();
+      const isSystem = SYSTEM_TABS.has(labelText);
+
+      const menu = document.createElement('div');
+      menu.className = 'tab-ctx-menu';
+      _ctxMenu = menu;
+
+      function item(icon, label, cls, action) {
+        const el = document.createElement('div');
+        el.className = 'tab-ctx-item' + (cls ? ' ' + cls : '');
+        el.innerHTML = `<span class="ms">${icon}</span>${label}`;
+        el.addEventListener('mousedown', ev => { ev.preventDefault(); closeCtxMenu(); action(); });
+        return el;
+      }
+
+      menu.appendChild(item('visibility_off', 'Hide', '', () => hideTab(tabBtn)));
+      menu.appendChild(item('home_pin', 'Make default', '', () => makeDefaultTab(tabBtn)));
+
+      if (!isSystem) {
+        menu.appendChild(document.createElement('div')).className = 'tab-ctx-sep';
+        const sep = menu.lastChild; sep.className = 'tab-ctx-sep';
+        menu.appendChild(item('edit', 'Rename', '', () => {
+          const labelEl = tabBtn.querySelector('.page-tab-label');
+          selectTab(tabBtn);
+          startTabRename(labelEl);
+        }));
+        menu.appendChild(item('delete', 'Delete', 'danger', () => deleteTab(tabBtn)));
+      }
+
+      // Position below the tab
+      document.body.appendChild(menu);
+      const tr = tabBtn.getBoundingClientRect();
+      const mw = menu.offsetWidth, mh = menu.offsetHeight;
+      let left = tr.left;
+      let top = tr.bottom + 4;
+      if (left + mw > window.innerWidth - 8) left = window.innerWidth - mw - 8;
+      if (top + mh > window.innerHeight - 8) top = tr.top - mh - 4;
+      menu.style.left = left + 'px';
+      menu.style.top = top + 'px';
+    }
+
+    function hideTab(tabBtn) {
+      const isActive = tabBtn.classList.contains('active');
+      tabBtn.style.display = 'none';
+      if (isActive) {
+        // Activate first visible tab
+        const next = document.querySelector('.page-tab:not([style*="display: none"])');
+        if (next) selectTab(next);
+      }
+    }
+
+    function makeDefaultTab(tabBtn) {
+      _defaultTab = tabBtn.querySelector('.page-tab-label').textContent.trim();
+      // Visual feedback: briefly flash the indicator
+      const ind = tabBtn.querySelector('.page-tab-indicator');
+      ind.style.transition = 'none';
+      ind.style.opacity = '0.5';
+      requestAnimationFrame(() => { ind.style.transition = ''; ind.style.opacity = ''; });
+    }
+
+    function deleteTab(tabBtn) {
+      const backdrop = document.createElement('div');
+      backdrop.className = 'confirm-backdrop';
+      backdrop.innerHTML = `
+        <div class="confirm-dialog">
+          <p class="confirm-title">Delete Dashboard?</p>
+          <p class="confirm-body">This action cannot be undone.</p>
+          <div class="confirm-actions">
+            <button class="confirm-btn cancel">Cancel</button>
+            <button class="confirm-btn destructive">Delete</button>
+          </div>
+        </div>`;
+
+      backdrop.querySelector('.cancel').addEventListener('click', () => backdrop.remove());
+      backdrop.addEventListener('mousedown', e => { if (e.target === backdrop) backdrop.remove(); });
+
+      backdrop.querySelector('.destructive').addEventListener('click', () => {
+        backdrop.remove();
+        const isActive = tabBtn.classList.contains('active');
+        const label = tabBtn.querySelector('.page-tab-label').textContent.trim();
+        const tabId = tabBtn.dataset.tabId;
+        delete TAB_LAYOUTS[label];
+        delete _tabDirty[label];
+        delete _customDashboards[tabId];
+        tabBtn.remove();
+        if (isActive) {
+          const next = document.querySelector('.page-tab:not([style*="display: none"])');
+          if (next) selectTab(next);
+        }
+      });
+
+      document.body.appendChild(backdrop);
+      backdrop.querySelector('.cancel').focus();
+    }
+
+    // Wire right-click on existing tabs + delegate for dynamically added ones
+    document.querySelector('.page-tabs-list').addEventListener('contextmenu', e => {
+      const tab = e.target.closest('.page-tab');
+      if (tab) openTabCtxMenu(e, tab);
+    });
+
+    // Double-click to rename custom tabs
+    document.querySelector('.page-tabs-list').addEventListener('dblclick', e => {
+      const tab = e.target.closest('.page-tab');
+      if (!tab) return;
+      const labelEl = tab.querySelector('.page-tab-label');
+      const label = labelEl.textContent.trim();
+      if (SYSTEM_TABS.has(label)) return;
+      selectTab(tab);
+      startTabRename(labelEl);
+    });
+
+    // Close on outside click or Escape
+    document.addEventListener('mousedown', e => {
+      if (_ctxMenu && !_ctxMenu.contains(e.target)) closeCtxMenu();
+      if (_widgetMenu && !_widgetMenu.contains(e.target) && !_widgetMenuCard?.contains(e.target)) closeWidgetMenu();
+    });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') { closeCtxMenu(); closeWidgetMenu(); }
+    });
+
+    /* ── Dashboard layouts ──────────────────────────────────────────── */
+    const TAB_LAYOUTS = {
+      'Priorities': [
+        { h: 260, tiles: [{ flex: 1, v: 'chart-bar', title: 'Alerts Summary' }] },
+        { h: 200, tiles: [{ flex: 1, v: 'chart-line', title: 'Highest/Lowest Variance' }, { flex: 1, v: 'metric-list', title: 'Booking & Performance' }] },
+      ],
+      'Performance': [
+        { h: 240, tiles: [{ flex: 1, v: 'kpi', title: 'Financial Scorecard' }] },
+        { h: 200, tiles: [{ flex: 1, v: 'chart-bar', title: 'Occupancy Over Time' }, { flex: 1, v: 'donut', title: 'Business Mix' }] },
+        { h: 180, tiles: [{ flex: 1, v: 'chart-line', title: 'Cumulative Booking Curve' }] },
+      ],
+      'Insights': [
+        { h: 220, tiles: [{ flex: 1, v: 'chart-line', title: 'Market Insights' }] },
+        { h: 180, tiles: [{ flex: 1, v: 'chart-bar', title: 'Hotel Pickup' }] },
+        { h: 200, tiles: [{ flex: 1, v: 'table', title: 'Booking Engine Search Activity' }, { flex: 1, v: 'metric-list', title: 'Group Business by Stage' }] },
+        { h: 160, tiles: [{ flex: 1, v: 'donut', title: 'Geo Source of Bookings' }] },
+      ],
+    };
+
+    /* ── Tile content by variant ──────────────────────────────────── */
+    const UPDATED_LABELS = ['Updated 1h ago', 'Updated 2h ago', 'Updated 3h ago', 'Updated today', 'Updated 5h ago'];
+    function tileContent(v, title) {
+      const updated = UPDATED_LABELS[Math.floor(Math.random() * UPDATED_LABELS.length)];
+      const head = title
+        ? `<div class="tp-head"><div class="tp-title">${title}</div><div class="tp-updated">${updated}</div></div>`
+        : `<div class="tp-head"><div class="tp-h1"></div><div class="tp-h2"></div></div>`;
+      if (v === 'kpi') {
+        const w = [55, 70, 62, 48][Math.floor(Math.random()*4)];
+        return `<div class="tp">${head}<div class="tp-kpi"><div class="tp-kpi-num"></div><div class="tp-kpi-bar" style="width:100%"><span style="position:absolute;top:0;left:0;height:100%;width:${w}%;background:var(--active-accent);opacity:.45;border-radius:3px"></span></div></div></div>`;
+      }
+      if (v === 'chart-bar') {
+        const hs = [55,70,40,85,60,75,45,90,50,65];
+        return `<div class="tp">${head}<div class="tp-bars">${hs.map(h=>`<div class="tp-bar" style="height:${h}%"></div>`).join('')}</div></div>`;
+      }
+      if (v === 'chart-line') {
+        const pts = [[0,65],[1,50],[2,72],[3,40],[4,68],[5,30],[6,58],[7,45],[8,70],[9,35],[10,60]];
+        const w=300, h=80;
+        const path = pts.map((p,i)=>`${i===0?'M':'L'}${(p[0]/10)*w},${h-(p[1]/100)*h}`).join(' ');
+        const fill = pts.map((p,i)=>`${i===0?'M':'L'}${(p[0]/10)*w},${h-(p[1]/100)*h}`).join(' ')+` L${w},${h} L0,${h} Z`;
+        return `<div class="tp">${head}<div class="tp-linechart"><svg viewBox="0 0 300 80" preserveAspectRatio="none"><path d="${fill}" fill="color-mix(in srgb, var(--active-accent) 12%, transparent)"/><path d="${path}" fill="none" stroke="color-mix(in srgb, var(--active-accent) 60%, transparent)" stroke-width="2" stroke-linejoin="round"/></svg></div></div>`;
+      }
+      if (v === 'metric-list') {
+        const ws = [[42,18],[55,14],[38,22],[48,16]];
+        return `<div class="tp">${head}<div class="tp-list">${ws.map(([l,r])=>`<div class="tp-list-row"><div class="tp-list-lbl" style="width:${l}%"></div><div class="tp-list-val" style="width:${r}%"></div></div>`).join('')}</div></div>`;
+      }
+      if (v === 'table') {
+        const cols = [35,25,22,18];
+        const hd = `<div class="tp-table-hd">${cols.map(c=>`<div class="tp-table-hd-cell" style="width:${c}%"></div>`).join('')}</div>`;
+        const rs = Array(20).fill(0).map(()=>`<div class="tp-table-row" style="display:none">${cols.map(c=>`<div class="tp-table-cell" style="width:${c}%;opacity:${(Math.random()*0.4+0.4).toFixed(2)}"></div>`).join('')}</div>`).join('');
+        return `<div class="tp">${head}<div class="tp-table">${hd}${rs}</div></div>`;
+      }
+      if (v === 'donut') {
+        const pct = [38,27,20,15];
+        const colors = ['var(--active-accent)','color-mix(in srgb,var(--active-accent) 60%,transparent)','color-mix(in srgb,var(--active-accent) 35%,transparent)','var(--border)'];
+        let offset = 0;
+        const segs = pct.map((p, i) => {
+          const a = p / 100 * 314.16;
+          const s = `<circle cx="60" cy="60" r="50" fill="none" stroke="${colors[i]}" stroke-width="18" stroke-dasharray="${a} ${314.16-a}" stroke-dashoffset="${-offset}" transform="rotate(-90 60 60)"/>`;
+          offset += a; return s;
+        });
+        return `<div class="tp">${head}<div class="tp-donut"><svg viewBox="0 0 120 120">${segs.join('')}</svg></div></div>`;
+      }
+      return `<div class="tp">${head}</div>`;
+    }
+
+    /* ── Add tile / add row helpers ──────────────────────────────────── */
+    const ADD_VARIANTS = ['chart-bar', 'kpi', 'chart-line', 'metric-list', 'table', 'donut'];
+    let _variantIdx = 0;
+    function pickVariant() { return ADD_VARIANTS[_variantIdx++ % ADD_VARIANTS.length]; }
+
+    function makeAddBtn(title) {
+      const btn = document.createElement('button');
+      btn.className = 'add-btn';
+      btn.textContent = '+';
+      btn.title = title || 'Add';
+      return btn;
+    }
+
+    function makeRhV() {
+      const vh = document.createElement('div');
+      vh.className = 'rh-v';
+      vh.appendChild(makeAddBtn('Add tile here'));
+      return vh;
+    }
+
+    function makeRhH() {
+      const rh = document.createElement('div');
+      rh.className = 'rh-h';
+      rh.appendChild(makeAddBtn('Add row here'));
+      return rh;
+    }
+
+    function makeRowEdge(side) {
+      const el = document.createElement('div');
+      el.className = 'row-edge';
+      el.dataset.side = side; // 'l' or 'r'
+      el.appendChild(makeAddBtn(side === 'l' ? 'Add tile at start' : 'Add tile at end'));
+      return el;
+    }
+
+    function removeTile(tile) {
+      tile.classList.add('tile-removing');
+      // Wait for fade + collapse animation (0.18s opacity + 0.14s delay + 0.26s collapse = 0.4s)
+      setTimeout(() => {
+        const row = tile.parentElement;
+        if (!row) return;
+        const tiles = row.querySelectorAll('.dash-tile');
+        if (tiles.length === 1) {
+          const next = row.nextElementSibling;
+          const prev = row.previousElementSibling;
+          if (next && next.classList.contains('rh-h')) next.remove();
+          else if (prev && prev.classList.contains('rh-h')) prev.remove();
+          row.remove();
+        } else {
+          const next = tile.nextElementSibling;
+          const prev = tile.previousElementSibling;
+          if (next && next.classList.contains('rh-v')) next.remove();
+          else if (prev && prev.classList.contains('rh-v')) prev.remove();
+          tile.remove();
+        }
+        markDirty();
+        // If no tiles remain on the whole dashboard, revert to empty state
+        const dash = document.querySelector('.dashboard');
+        if (dash && dash.querySelectorAll('.dash-tile').length === 0) {
+          if (_currentTabId) delete _customDashboards[_currentTabId];
+          delete TAB_LAYOUTS[_currentTab];
+          renderDashboard(_currentTab);
+        }
+      }, 420);
+    }
+
+    // After adding a tile, redistribute all tiles in the row to equal widths
+    // so no tile wraps to a new line. Sets min-width inline to 0 to override
+    // the CSS 220px min that is only for viewport-responsive wrapping.
+    function fitTilesInRow(row) {
+      const tiles = Array.from(row.querySelectorAll(':scope > .dash-tile'));
+      const handles = Array.from(row.querySelectorAll(':scope > .rh-v'));
+      const rowW = row.getBoundingClientRect().width;
+      const available = Math.max(0, rowW - 32 - handles.length * 10); // 32 = two 16px edge strips
+      const perTile = tiles.length ? available / tiles.length : available;
+      tiles.forEach(t => {
+        t.style.flexGrow = '1';
+        t.style.flexBasis = perTile + 'px';
+        t.style.minWidth = '0';
+      });
+    }
+
+    function addTileToRow(row, beforeEl, title) {
+      // Insert [new-rh-v][new-tile] before beforeEl (right edge strip when adding at end)
+      const anchor = beforeEl || row.querySelector('.row-edge[data-side="r"]');
+      const newRhV = makeRhV();
+      const newTile = makeTile({ flex: 1, v: pickVariant(), title: title || 'Untitled' });
+      row.insertBefore(newRhV, anchor);
+      row.insertBefore(newTile, anchor);
+      fitTilesInRow(row);
+      markDirty();
+    }
+
+    function buildRow(heightPx, title) {
+      const newRow = document.createElement('div');
+      newRow.className = 'dash-row';
+      newRow.style.height = heightPx + 'px';
+      newRow.appendChild(makeRowEdge('l'));
+      newRow.appendChild(makeTile({ flex: 1, v: pickVariant(), title: title || 'Untitled' }));
+      newRow.appendChild(makeRowEdge('r'));
+      return newRow;
+    }
+
+    function addRowToDash(dash, beforeEl, title) {
+      const anchor = beforeEl || dash.querySelector('.dash-end');
+      const newRow = buildRow(170, title);
+      const newRhH = makeRhH();
+      dash.insertBefore(newRow, anchor);
+      dash.insertBefore(newRhH, anchor);
+      markDirty();
+    }
+
+    /* ── Build & render dashboard ──────────────────────────────────── */
+    let _dragSrc = null;
+    let _dropSide = null; // 'left' | 'right' — which side of the target tile to insert on
+    let _currentTab = 'Priorities';
+    const _tabDirty = {};
+
+    const SYSTEM_TABS = new Set(['Priorities', 'Performance', 'Insights']);
+
+    function markDirty() {
+      _tabDirty[_currentTab] = true;
+      if (SYSTEM_TABS.has(_currentTab)) {
+        document.getElementById('tab-reset-btn').style.display = '';
+      }
+    }
+
+    function resetDashboard() {
+      _tabDirty[_currentTab] = false;
+      document.getElementById('tab-reset-btn').style.display = 'none';
+      renderDashboard(_currentTab);
+    }
+
+    function setupTableResize(tpTable) {
+      const HD_H = 26, ROW_H = 24;
+      function update() {
+        const rows = tpTable.querySelectorAll('.tp-table-row');
+        const visible = Math.max(0, Math.floor((tpTable.clientHeight - HD_H) / ROW_H));
+        rows.forEach((r, i) => r.style.display = i < visible ? '' : 'none');
+      }
+      new ResizeObserver(update).observe(tpTable);
+      tpTable._syncRows = update; // called after dashboard is in DOM
+    }
+
+    function makeTile(tileDef) {
+      const tile = document.createElement('div');
+      tile.className = 'dash-tile';
+      tile.style.flexGrow = tileDef.flex;
+      tile.style.flexBasis = '220px';
+      tile.innerHTML = tileContent(tileDef.v, tileDef.title);
+      if (tileDef.v === 'table') setupTableResize(tile.querySelector('.tp-table'));
+      const delBtn = document.createElement('button');
+      delBtn.className = 'tile-del-btn';
+      delBtn.title = 'Remove tile';
+      delBtn.draggable = false;
+      delBtn.innerHTML = '<span class="ms">delete</span>';
+      delBtn.addEventListener('mousedown', e => e.stopPropagation()); // don't start drag
+      delBtn.addEventListener('click', e => { e.stopPropagation(); removeTile(tile); });
+      tile.appendChild(delBtn);
+      tile.draggable = true;
+      tile.addEventListener('dragstart', e => {
+        _dragSrc = tile;
+        tile.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+        const dash = tile.closest('.dashboard');
+        if (dash) dash.classList.add('drag-active');
+      });
+      tile.addEventListener('dragend', () => {
+        tile.classList.remove('dragging');
+        document.querySelectorAll('.dash-tile').forEach(t => t.classList.remove('drop-left', 'drop-right'));
+        document.querySelectorAll('.rh-h, .dash-end').forEach(z => z.classList.remove('row-drop-hover'));
+        const dash = tile.closest('.dashboard');
+        if (dash) dash.classList.remove('drag-active');
+        _dragSrc = null;
+        _dropSide = null;
+      });
+      tile.addEventListener('dragover', e => {
+        e.preventDefault();
+        if (!_dragSrc || _dragSrc === tile) return;
+        const rect = tile.getBoundingClientRect();
+        const side = e.clientX < rect.left + rect.width / 2 ? 'left' : 'right';
+        if (_dropSide !== side || (!tile.classList.contains('drop-left') && !tile.classList.contains('drop-right'))) {
+          _dropSide = side;
+          document.querySelectorAll('.dash-tile').forEach(t => t.classList.remove('drop-left', 'drop-right'));
+          tile.classList.add(side === 'left' ? 'drop-left' : 'drop-right');
+        }
+      });
+      tile.addEventListener('dragleave', () => {
+        tile.classList.remove('drop-left', 'drop-right');
+        _dropSide = null;
+      });
+      tile.addEventListener('drop', e => {
+        e.preventDefault();
+        tile.classList.remove('drop-left', 'drop-right');
+        if (!_dragSrc || _dragSrc === tile) return;
+        insertTileAtPosition(_dragSrc, tile, _dropSide || 'right');
+        _dropSide = null;
+        markDirty();
+      });
+      return tile;
+    }
+
+    function renderDashboard(tabName) {
+      _currentTab = tabName;
+      const body = document.querySelector('.page-body');
+      const layout = TAB_LAYOUTS[tabName];
+      if (!layout) { renderEmptyDashboard(tabName); return; }
+
+      const dash = document.createElement('div');
+      dash.className = 'dashboard';
+      dash.dataset.type = SYSTEM_TABS.has(tabName) ? 'system' : 'custom';
+
+      // Event delegation: resize (mousedown) and add (click)
+      dash.addEventListener('mousedown', e => {
+        if (e.target.closest('.add-btn')) return; // don't start resize on add button
+        const vh = e.target.closest('.rh-v');
+        if (vh) {
+          const tileA = vh.previousElementSibling;
+          const tileB = vh.nextElementSibling;
+          if (tileA && tileB && tileA.classList.contains('dash-tile') && tileB.classList.contains('dash-tile'))
+            startColResize(e, vh, tileA, tileB);
+          return;
+        }
+        const rh = e.target.closest('.rh-h');
+        if (rh) {
+          const rowEl = rh.previousElementSibling;
+          if (rowEl && rowEl.classList.contains('dash-row')) startRowResize(e, rh, rowEl);
+        }
+      });
+
+      dash.addEventListener('click', e => {
+        const btn = e.target.closest('.add-btn');
+        if (!btn) return;
+        e.stopPropagation();
+
+        const anchorRect = btn.getBoundingClientRect();
+
+        // Edge strip buttons (left or right of row)
+        const rowEdge = btn.closest('.row-edge');
+        if (rowEdge) {
+          const row = rowEdge.closest('.dash-row');
+          if (rowEdge.dataset.side === 'r') {
+            openTilePicker(anchorRect, title => addTileToRow(row, rowEdge, title));
+          } else {
+            openTilePicker(anchorRect, title => {
+              const anchor = rowEdge.nextElementSibling;
+              const newTile = makeTile({ flex: 1, v: pickVariant(), title });
+              const newRhV = makeRhV();
+              row.insertBefore(newTile, anchor);
+              row.insertBefore(newRhV, anchor);
+              fitTilesInRow(row);
+              markDirty();
+            });
+          }
+          return;
+        }
+        // Between tiles (inside rh-v)
+        const rhV = btn.closest('.rh-v');
+        if (rhV) {
+          const row = rhV.parentElement;
+          const nextTile = rhV.nextElementSibling;
+          openTilePicker(anchorRect, title => {
+            const newTile = makeTile({ flex: 1, v: pickVariant(), title });
+            const newRhV = makeRhV();
+            row.insertBefore(newTile, nextTile);
+            row.insertBefore(newRhV, nextTile);
+            fitTilesInRow(row);
+            markDirty();
+          });
+          return;
+        }
+        // Between rows (inside rh-h) — add row after this rh-h
+        const rhH = btn.closest('.rh-h');
+        if (rhH) {
+          openTilePicker(anchorRect, title => addRowToDash(dash, rhH.nextElementSibling, title));
+          return;
+        }
+        // Dashboard end strip
+        if (btn.closest('.dash-end')) {
+          openTilePicker(anchorRect, title => addRowToDash(dash, null, title));
+        }
+      });
+
+      // Delegated drop-zone handlers for moving tiles to new rows
+      dash.addEventListener('dragover', e => {
+        const zone = e.target.closest('.rh-h, .dash-end');
+        if (zone && _dragSrc) { e.preventDefault(); zone.classList.add('row-drop-hover'); }
+      });
+      dash.addEventListener('dragleave', e => {
+        const zone = e.target.closest('.rh-h, .dash-end');
+        if (zone && !zone.contains(e.relatedTarget)) zone.classList.remove('row-drop-hover');
+      });
+      dash.addEventListener('drop', e => {
+        const zone = e.target.closest('.rh-h, .dash-end');
+        if (zone && _dragSrc) {
+          e.preventDefault();
+          zone.classList.remove('row-drop-hover');
+          moveToNewRow(_dragSrc, zone);
+          markDirty();
+        }
+      });
+
+      // Top drop zone — allows moving a tile before the first row
+      const topZone = makeRhH();
+      topZone.classList.add('rh-h-top');
+      dash.appendChild(topZone);
+
+      layout.forEach(rowDef => {
+        const row = document.createElement('div');
+        row.className = 'dash-row';
+        row.style.height = rowDef.h + 'px';
+        row.appendChild(makeRowEdge('l'));
+        rowDef.tiles.forEach((tileDef, ti) => {
+          if (ti > 0) row.appendChild(makeRhV());
+          row.appendChild(makeTile(tileDef));
+        });
+        row.appendChild(makeRowEdge('r'));
+        dash.appendChild(row);
+        dash.appendChild(makeRhH());
+      });
+
+      // Dashboard-end strip for adding a new row at the bottom
+      const dashEnd = document.createElement('div');
+      dashEnd.className = 'dash-end';
+      dashEnd.appendChild(makeAddBtn('Add row'));
+      dash.appendChild(dashEnd);
+
+      body.innerHTML = '';
+      body.appendChild(dash);
+
+      // Initial row count for table tiles (element must be in DOM for clientHeight)
+      dash.querySelectorAll('.tp-table').forEach(t => t._syncRows && t._syncRows());
+
+      // Show/hide reset button based on dirty state
+      document.getElementById('tab-reset-btn').style.display = _tabDirty[tabName] ? '' : 'none';
+    }
+
+    /* ── Resize logic ──────────────────────────────────────────────── */
+    let _resize = null;
+
+    function startColResize(e, handle, tileA, tileB) {
+      e.preventDefault();
+      handle.classList.add('active');
+      _resize = {
+        type: 'col', handle, tileA, tileB,
+        startX: e.clientX,
+        wA: tileA.getBoundingClientRect().width,
+        wB: tileB.getBoundingClientRect().width,
+      };
+    }
+
+    function startRowResize(e, handle, rowA) {
+      e.preventDefault();
+      handle.classList.add('active');
+      _resize = {
+        type: 'row', handle, rowA,
+        startY: e.clientY,
+        hA: rowA.getBoundingClientRect().height,
+      };
+    }
+
+    document.addEventListener('mousemove', e => {
+      if (!_resize) return;
+      if (_resize.type === 'col') {
+        const TILE_MIN = 220;
+        const total = _resize.wA + _resize.wB;
+        const delta = e.clientX - _resize.startX;
+        const nA = Math.min(total - TILE_MIN, Math.max(TILE_MIN, _resize.wA + delta));
+        const nB = total - nA;
+        _resize.tileA.style.flexBasis = nA + 'px';
+        _resize.tileB.style.flexBasis = nB + 'px';
+      } else {
+        const delta = e.clientY - _resize.startY;
+        _resize.rowA.style.height = Math.max(120, _resize.hA + delta) + 'px';
+      }
+    });
+
+    document.addEventListener('mouseup', () => {
+      if (_resize) {
+        _resize.handle.classList.remove('active');
+        markDirty();
+        _resize = null;
+      }
+    });
+
+    /* ── Drag-drop swap with FLIP animation ─────────────────────────── */
+    function detachTile(tile) {
+      // Remove tile and whichever adjacent rh-v belongs to it
+      const next = tile.nextElementSibling;
+      const prev = tile.previousElementSibling;
+      if (next && next.classList.contains('rh-v')) next.remove();
+      else if (prev && prev.classList.contains('rh-v')) prev.remove();
+      tile.remove();
+    }
+
+    function cleanupRow(row) {
+      // If row is empty of tiles, remove row + one adjacent rh-h
+      if (row.querySelectorAll('.dash-tile').length === 0) {
+        const after = row.nextElementSibling;
+        const before = row.previousElementSibling;
+        if (after && after.classList.contains('rh-h')) after.remove();
+        else if (before && before.classList.contains('rh-h')) before.remove();
+        row.remove();
+      } else {
+        fitTilesInRow(row);
+      }
+    }
+
+    function insertTileAtPosition(srcTile, targetTile, side) {
+      const srcRow = srcTile.parentElement;
+      const tgtRow = targetTile.parentElement;
+
+      detachTile(srcTile);
+
+      const newRhV = makeRhV();
+      if (side === 'left') {
+        // [srcTile][newRhV][targetTile]
+        tgtRow.insertBefore(srcTile, targetTile);
+        tgtRow.insertBefore(newRhV, targetTile);
+      } else {
+        // [targetTile][newRhV][srcTile]
+        const after = targetTile.nextElementSibling;
+        tgtRow.insertBefore(newRhV, after);
+        tgtRow.insertBefore(srcTile, after);
+      }
+
+      fitTilesInRow(tgtRow);
+
+      if (srcRow !== tgtRow) cleanupRow(srcRow);
+    }
+
+    function moveToNewRow(tile, zone) {
+      const srcRow = tile.parentElement;
+      if (!srcRow) return;
+      const dash = zone.closest('.dashboard');
+      if (!dash) return;
+
+      const rowH = parseInt(srcRow.style.height) || 200;
+      detachTile(tile);
+
+      // Build new row
+      const newRow = document.createElement('div');
+      newRow.className = 'dash-row';
+      newRow.style.height = rowH + 'px';
+      newRow.appendChild(makeRowEdge('l'));
+      newRow.appendChild(tile);
+      newRow.appendChild(makeRowEdge('r'));
+
+      // Insert [newRow][newRhH] after the drop zone
+      const insertBefore = zone.nextElementSibling;
+      const newRhH = makeRhH();
+      dash.insertBefore(newRow, insertBefore);
+      dash.insertBefore(newRhH, insertBefore);
+
+      tile.style.flexGrow = '1';
+      tile.style.flexBasis = '';
+      tile.style.minWidth = '';
+
+      cleanupRow(srcRow);
+    }
+
+    function swapTiles(a, b) {
+      // FLIP — record positions before swap
+      const rectA = a.getBoundingClientRect();
+      const rectB = b.getBoundingClientRect();
+
+      // Swap DOM positions
+      const parentA = a.parentNode, nextA = a.nextSibling;
+      const parentB = b.parentNode, nextB = b.nextSibling;
+      if (parentA === parentB) {
+        if (nextA === b)       { parentA.insertBefore(b, a); }
+        else if (nextB === a)  { parentB.insertBefore(a, b); }
+        else {
+          parentA.insertBefore(b, nextA);
+          parentB.insertBefore(a, nextB);
+        }
+      } else {
+        parentA.insertBefore(b, nextA);
+        parentB.insertBefore(a, nextB);
+      }
+
+      // Compute deltas (new position minus old position)
+      const newRectA = a.getBoundingClientRect();
+      const newRectB = b.getBoundingClientRect();
+      const dxA = rectA.left - newRectA.left, dyA = rectA.top - newRectA.top;
+      const dxB = rectB.left - newRectB.left, dyB = rectB.top - newRectB.top;
+
+      // Apply inverse transforms instantly (no transition)
+      [a, b].forEach(el => { el.style.transition = 'none'; el.style.willChange = 'transform'; });
+      a.style.transform = `translate(${dxA}px,${dyA}px)`;
+      b.style.transform = `translate(${dxB}px,${dyB}px)`;
+
+      // Force reflow so the browser sees the starting transform
+      a.getBoundingClientRect();
+
+      // Animate to natural positions
+      const easing = 'cubic-bezier(0.4,0,0.2,1)';
+      a.style.transition = `transform 0.3s ${easing}`;
+      b.style.transition = `transform 0.3s ${easing}`;
+      a.style.transform = '';
+      b.style.transform = '';
+
+      // Clean up after animation (only on transform, not other property transitions)
+      const cleanup = el => el.addEventListener('transitionend', e => {
+        if (e.propertyName !== 'transform') return;
+        el.style.transition = '';
+        el.style.willChange = '';
+      }, { once: true });
+      cleanup(a);
+      cleanup(b);
     }
 
     // Init: set Home title to property name, hide page actions, show tabs
     document.querySelector('.page-title').textContent = getPropertyName();
     document.querySelectorAll('.page-actions').forEach(b => b.style.display = 'none');
     // tabs visible on Home by default, hidden on other pages via setActive
+    renderDashboard('Priorities');
   </script>
 </body>
 </html>
