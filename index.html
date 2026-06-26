@@ -531,6 +531,7 @@
       position: fixed;
       z-index: 1400;
       background: var(--bg-paper);
+      border: 1px solid var(--border);
       border-radius: 4px;
       box-shadow: 0 4px 20px rgba(0,0,0,0.28);
       width: 320px;
@@ -822,6 +823,276 @@
       color: var(--text-secondary);
     }
 
+    /* Disabled button state */
+    .btn-contained:disabled, .btn-outlined:disabled, .btn-text:disabled {
+      opacity: 0.38;
+      cursor: default;
+      pointer-events: none;
+    }
+
+    /* ── Metrics Calendar panel ─────────────────────────────────────── */
+    .cal-body {
+      flex: 1;
+      overflow-x: hidden;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+    }
+    .cal-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .cal-nav-arrows { display: flex; align-items: center; }
+    .cal-footer {
+      flex-shrink: 0;
+      border-top: 1px solid var(--border);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+    /* Weekday header adjustments for the larger panel view */
+    .cal-body .dp-wd { padding: 6px 0; font-size: 11px; letter-spacing: 0.05em; }
+    .cal-body .dp-month-label { font-size: 14px; }
+
+    /* ── Calendar cell grid ─────────────────────────────────────────── */
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+    }
+    .cal-cell {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 5px 0 6px;
+      cursor: pointer;
+      position: relative;
+      user-select: none;
+    }
+    .cal-other { opacity: 0.28; pointer-events: none; }
+    /* Horizontal range strip — sits behind the circle */
+    .cal-cell::before {
+      content: '';
+      position: absolute;
+      top: 5px;
+      left: 0; right: 0;
+      height: 36px;
+      background: var(--active-bg);
+      z-index: 0;
+      opacity: 0;
+    }
+    .cal-in-range::before              { opacity: 1; }
+    .cal-start::before                 { opacity: 1; left: 50%; }
+    .cal-end::before                   { opacity: 1; right: 50%; }
+    .cal-start.cal-end::before         { opacity: 0; }
+    /* Circle for day number */
+    .cal-cell-circle {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--text-primary);
+      position: relative;
+      z-index: 1;
+      transition: background 0.12s;
+      font-family: 'Lato', sans-serif;
+      flex-shrink: 0;
+    }
+    .cal-cell:hover:not(.cal-other) .cal-cell-circle { background: var(--hover-overlay); }
+    /* Today ring stroke */
+    .cal-today:not(.cal-start):not(.cal-end) .cal-cell-circle {
+      box-shadow: inset 0 0 0 2px var(--text-secondary);
+    }
+    /* Today dot */
+    .cal-today .cal-cell-circle::after {
+      content: '';
+      position: absolute;
+      bottom: 3px; left: 50%;
+      transform: translateX(-50%);
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: var(--active-accent);
+    }
+    /* Selected start / end */
+    .cal-start .cal-cell-circle,
+    .cal-end   .cal-cell-circle {
+      background: var(--active-accent) !important;
+      color: var(--primary-contrast) !important;
+      font-weight: 700;
+    }
+    .cal-start .cal-cell-circle::after,
+    .cal-end   .cal-cell-circle::after { display: none; }
+    /* In-range number tint */
+    .cal-in-range .cal-cell-circle { color: var(--active-accent); font-weight: 500; }
+    /* Metric text */
+    .cal-cell-metric {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-top: 3px;
+      line-height: 1;
+      position: relative;
+      z-index: 1;
+      font-family: 'Lato', sans-serif;
+    }
+    .cal-other .cal-cell-metric { display: none; }
+    /* Hint text while selecting end date */
+    .cal-hint {
+      font-size: 12px;
+      color: var(--text-secondary);
+      text-align: center;
+      padding: 8px 0 0;
+      min-height: 20px;
+    }
+
+    /* ── Calendar day indicators ──────────────────────────────────── */
+    .cal-cell-indicators {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      min-height: 10px;
+      margin: 2px 0 1px;
+      position: relative;
+      z-index: 1;
+      overflow: visible;
+    }
+    .cal-other .cal-cell-indicators { visibility: hidden; }
+    .cal-ind { display: inline-block; flex-shrink: 0; }
+    /* Event — blue square */
+    .cal-ind-event {
+      width: 8px; height: 8px;
+      background: #3b82f6;
+      border-radius: 2px;
+    }
+    /* Note — purple diamond (rotated square) */
+    .cal-ind-note {
+      width: 7px; height: 7px;
+      background: #7c3aed;
+      border-radius: 1px;
+      transform: rotate(45deg);
+    }
+    /* Restriction — orange circle */
+    .cal-ind-restrict {
+      width: 8px; height: 8px;
+      background: #f97316;
+      border-radius: 50%;
+    }
+    /* AI Insight — auto_awesome icon with pulse ring */
+    .cal-ind-insight {
+      width: 12px; height: 12px;
+      background: transparent;
+      position: relative;
+      overflow: visible;
+      flex-shrink: 0;
+    }
+    /* auto_awesome glyph (Material Symbols Rounded — already loaded) */
+    .cal-ind-insight::before {
+      font-family: 'Material Symbols Rounded';
+      content: 'auto_awesome';
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      font-size: 12px;
+      line-height: 1;
+      color: var(--primary);
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1;
+      display: block;
+    }
+    /* Pulse ring */
+    .cal-ind-insight::after {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 12px; height: 12px;
+      margin: -6px 0 0 -6px;
+      border-radius: 50%;
+      background: var(--primary);
+      opacity: 0.5;
+      animation: cal-pulse-ring 2s ease-out infinite;
+    }
+    @keyframes cal-pulse-ring {
+      0%   { transform: scale(1);   opacity: 0.5; }
+      100% { transform: scale(3);   opacity: 0; }
+    }
+
+    /* Toggle-off: hide indicator type via class on cal-body */
+    .cal-hide-event    .cal-ind-event    { display: none; }
+    .cal-hide-note     .cal-ind-note     { display: none; }
+    .cal-hide-restrict .cal-ind-restrict { display: none; }
+    .cal-hide-insight  .cal-ind-insight  { display: none; }
+
+    /* ── Calendar quick-preset chips ────────────────────────────── */
+    .cal-presets {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 12px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .cal-presets::-webkit-scrollbar { display: none; }
+    .cal-preset-btn {
+      flex-shrink: 0;
+      padding: 4px 10px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: var(--bg-paper);
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-family: 'Lato', sans-serif;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+    .cal-preset-btn:hover { background: var(--hover-overlay); color: var(--text-primary); }
+    .cal-preset-btn.active {
+      background: var(--active-bg);
+      border-color: var(--active-accent);
+      color: var(--active-accent);
+    }
+
+    /* ── Calendar legend ──────────────────────────────────────────── */
+    .cal-legend {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+    .cal-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg-paper);
+      color: var(--text-primary);
+      font-size: 13px;
+      font-family: 'Lato', sans-serif;
+      cursor: pointer;
+      transition: background 0.15s, opacity 0.2s;
+      text-align: left;
+    }
+    .cal-legend-item:hover { background: var(--hover-overlay); }
+    .cal-legend-item.off { opacity: 0.38; }
+    /* Legend icons — same classes as cal-ind but slightly larger */
+    .cal-leg-icon.cal-ind-event    { width: 12px; height: 12px; }
+    .cal-leg-icon.cal-ind-note     { width: 10px; height: 10px; }
+    .cal-leg-icon.cal-ind-restrict { width: 12px; height: 12px; }
+    .cal-leg-icon.cal-ind-insight  { width: 13px; height: 13px; }
+
     /* ─── Right rail ─────────────────────────────────────────────────── */
     .right-rail {
       width: 48px;
@@ -900,6 +1171,428 @@
       box-shadow: 0 2px 12px rgba(168, 85, 247, 0.55);
     }
     [data-theme="dark"] .ai-btn:hover { box-shadow: 0 4px 20px rgba(168, 85, 247, 0.75); }
+    .ai-btn--active { filter: brightness(1.15); box-shadow: 0 4px 16px rgba(124, 58, 237, 0.6) !important; }
+    [data-theme="dark"] .ai-btn--active { box-shadow: 0 4px 20px rgba(168, 85, 247, 0.75) !important; }
+
+    /* ─── AI Assistant panel ──────────────────────────────────────────── */
+    .ai-panel {
+      position: fixed;
+      top: 0;
+      right: 48px;
+      height: 100%;
+      width: 420px;
+      background: var(--bg-paper);
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      transform: translateX(calc(100% + 48px));
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s;
+      z-index: 200;
+      box-shadow: none;
+    }
+    .ai-panel.open {
+      transform: translateX(0);
+      box-shadow: -6px 0 28px rgba(0,0,0,0.14);
+      z-index: 300;
+    }
+    .ai-panel.open.pinned { z-index: 200; }
+    [data-theme="dark"] .ai-panel.open { box-shadow: -6px 0 28px rgba(0,0,0,0.4); }
+    .ai-panel-resize {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 5px;
+      cursor: ew-resize;
+      z-index: 1;
+      transition: background 0.15s;
+    }
+    .ai-panel-resize:hover { background: var(--primary); opacity: 0.25; }
+    .ai-panel-resize.dragging { background: var(--primary); opacity: 0.35; }
+    .ai-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px 0 20px;
+      height: 56px;
+      box-sizing: border-box;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .ai-panel-header-left {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      min-width: 0;
+      flex: 1;
+    }
+    .ai-chat-back {
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      border: none;
+      background: transparent;
+      border-radius: 6px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      color: var(--icon-color);
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .ai-chat-back:hover { background: var(--hover-overlay); }
+    .ai-chat-back .ms { font-size: 20px; }
+    .ai-panel.chat-mode .ai-chat-back { display: flex; }
+    .ai-panel-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-primary);
+      font-family: 'Lato', sans-serif;
+      letter-spacing: 0.1px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .ai-panel-close {
+      width: 28px;
+      height: 28px;
+      border: none;
+      background: transparent;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--icon-color);
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .ai-panel-close:hover { background: var(--hover-overlay); }
+    .ai-panel-close .ms { font-size: 20px; }
+    .ai-panel-body { flex: 1; overflow-y: auto; padding: 16px; }
+
+    /* ── AI chat input section ──────────────────────────────────────── */
+    .ai-chat-input {
+      flex-shrink: 0;
+      padding: 12px;
+      background: var(--active-bg);
+      border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+    .ai-chat-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 6px;
+    }
+    .ai-chat-field-wrap {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg-paper);
+      border: 1.5px solid var(--input-border);
+      border-radius: 8px;
+      padding: 7px 8px 7px 12px;
+      transition: border-color 0.15s;
+      min-width: 0;
+    }
+    .ai-chat-field-wrap:focus-within { border-color: var(--primary); }
+    .ai-chat-textarea {
+      flex: 1;
+      border: none;
+      background: transparent;
+      resize: none;
+      font-family: 'Lato', sans-serif;
+      font-size: 14px;
+      color: var(--text-primary);
+      outline: none;
+      line-height: 1.5;
+      min-height: 21px;
+      max-height: 96px;
+      overflow-y: auto;
+    }
+    .ai-chat-textarea::placeholder { color: var(--text-secondary); }
+    .ai-suggestions-pill {
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 1px;
+      padding: 3px 6px 3px 9px;
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-family: 'Lato', sans-serif;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s;
+    }
+    .ai-suggestions-pill:hover { background: var(--hover-overlay); }
+    .ai-suggestions-pill .ms { font-size: 16px; transition: transform 0.2s; }
+    .ai-suggestions-pill.open .ms { transform: rotate(180deg); }
+    .ai-send-btn {
+      flex-shrink: 0;
+      width: 36px;
+      height: 36px;
+      border: none;
+      border-radius: 4px;
+      background: var(--primary);
+      color: var(--primary-contrast);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: filter 0.15s;
+    }
+    .ai-send-btn:hover { filter: brightness(0.92); }
+    .ai-send-btn .ms { font-size: 18px; }
+    .ai-send-btn--secondary {
+      background: transparent;
+      border: 1px solid var(--primary);
+      color: var(--primary);
+    }
+    .ai-send-btn--secondary:hover { background: var(--active-bg); filter: none; }
+    .ai-send-btn--secondary .ms { color: var(--primary); }
+    .ai-history-btn {
+      flex-shrink: 0;
+      width: 36px;
+      height: 36px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: var(--bg-paper);
+      color: var(--icon-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .ai-history-btn:hover { background: var(--hover-overlay); }
+    .ai-history-btn .ms { font-size: 18px; }
+    .ai-suggestions-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 12px;
+      right: 12px;
+      background: var(--bg-paper);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.28);
+      z-index: 10;
+      overflow: hidden;
+    }
+    [data-theme="dark"] .ai-suggestions-dropdown { box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
+    .ai-suggestions-dropdown.open { display: block; }
+    .ai-suggestion-item {
+      padding: 11px 14px;
+      font-size: 13px;
+      line-height: 1.4;
+      color: var(--text-primary);
+      cursor: pointer;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.12s;
+    }
+    .ai-suggestion-item:last-child { border-bottom: none; }
+    .ai-suggestion-item:hover { background: var(--hover-overlay); }
+
+    /* ── AI home / chat view switching ─────────────────────────────── */
+    .ai-home-view {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .ai-chat-view {
+      flex: 1;
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .ai-panel.chat-mode .ai-home-view { display: none; }
+    .ai-panel.chat-mode .ai-chat-view { display: flex; }
+
+    /* ── messages area ─────────────────────────────────────────────── */
+    .ai-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .ai-msg-user {
+      align-self: flex-end;
+      background: var(--active-bg);
+      color: var(--primary);
+      border-radius: 14px 14px 4px 14px;
+      padding: 8px 14px;
+      font-size: 14px;
+      line-height: 1.4;
+      max-width: 80%;
+      word-break: break-word;
+      font-weight: 500;
+    }
+    .ai-msg-ai {
+      font-size: 14px;
+      color: var(--text-primary);
+      line-height: 1.55;
+    }
+    .ai-msg-ai p { margin: 0 0 10px; }
+    .ai-msg-ai p:last-child { margin-bottom: 0; }
+    .ai-msg-loading {
+      align-self: flex-start;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--bg-paper);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+    @keyframes ai-spin { to { transform: rotate(360deg); } }
+    .ai-spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: ai-spin 0.75s linear infinite;
+      flex-shrink: 0;
+    }
+
+    /* ── recommended action card ───────────────────────────────────── */
+    .ai-action-card {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin-top: 12px;
+    }
+    .ai-action-card-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 10px;
+    }
+    .ai-action-list {
+      list-style: disc;
+      padding-left: 18px;
+      margin: 0 0 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .ai-action-list li {
+      font-size: 13px;
+      color: var(--text-primary);
+      line-height: 1.45;
+    }
+    .ai-action-apply-btn {
+      width: 100%;
+      padding: 6px 16px;
+      background: var(--primary);
+      color: var(--primary-contrast);
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.4px;
+      line-height: 24px;
+      cursor: pointer;
+      font-family: 'Lato', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0px 1px 5px rgba(0,0,0,.12), 0px 2px 2px rgba(0,0,0,.14), 0px 3px 1px -2px rgba(0,0,0,.20);
+      transition: filter 0.15s;
+    }
+    .ai-action-apply-btn:hover { filter: brightness(0.92); }
+    .ai-action-apply-btn .ms { font-size: 20px; color: var(--primary-contrast); }
+
+    /* ── bottom chat input (inside chat view) ──────────────────────── */
+    .ai-chat-bottom-input {
+      flex-shrink: 0;
+      padding: 12px;
+      border-top: 1px solid var(--border);
+      background: var(--bg-paper);
+    }
+
+    /* Pin button */
+    .ai-panel-pin {
+      width: 28px;
+      height: 28px;
+      border: none;
+      background: transparent;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--icon-color);
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    .ai-panel-pin:hover { background: var(--hover-overlay); }
+    .ai-panel-pin .ms { font-size: 18px; }
+    .ai-panel-pin.is-pinned { color: var(--primary); }
+
+    /* Pinned state — pull panel into flex flow between .main and .right-rail */
+    .ai-panel.pinned {
+      position: relative;
+      top: auto;
+      right: auto;
+      height: 100%;
+      transform: none;
+      order: 2;
+      flex-shrink: 0;
+      box-shadow: none;
+      transition: none;
+    }
+    .ai-panel.pinned .ai-panel-close { display: none; }
+    [data-theme="dark"] .ai-panel.pinned { box-shadow: none; }
+
+    /* Keep right rail always last */
+    .right-rail { order: 99; }
+
+    /* Rail button — muted/disabled-ish when panel is pinned */
+    .ai-btn.ai-btn--muted {
+      opacity: 0.4;
+      box-shadow: none !important;
+      filter: none !important;
+    }
+    .ai-btn.ai-btn--muted:hover {
+      opacity: 0.55;
+      filter: none !important;
+      box-shadow: none !important;
+    }
+
+    /* Panel flash when rail button clicked while pinned */
+    @keyframes ai-panel-flash {
+      0%   { box-shadow: inset 0 0 0 0px transparent; }
+      15%  { box-shadow: inset 0 0 0 2px var(--primary); }
+      60%  { box-shadow: inset 0 0 0 2px var(--primary); }
+      100% { box-shadow: inset 0 0 0 0px transparent; }
+    }
+    .ai-panel.flash { animation: ai-panel-flash 0.55s ease-out forwards; }
+
+    /* Rail button pinned indicator — small pin overlay badge */
+    .ai-btn-pin-badge {
+      position: absolute;
+      bottom: -2px;
+      right: -2px;
+      width: 14px;
+      height: 14px;
+      background: var(--primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1.5px solid var(--sidebar-bg);
+      pointer-events: none;
+    }
+    .ai-btn-pin-badge .ms { font-size: 9px; color: #fff; }
 
     .btn-badge {
       position: absolute;
@@ -1455,6 +2148,27 @@
     [data-theme="dark"] .btn-text:hover { background: rgba(165, 239, 25, 0.08); }
     .btn-text .ms { font-size: 20px; color: var(--primary); }
 
+    /* Outlined / secondary button */
+    .btn-outlined {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border: 1px solid var(--primary);
+      background: transparent;
+      color: var(--primary);
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.4px;
+      line-height: 24px;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-outlined:hover { background: var(--active-bg); }
+    .btn-outlined .ms { font-size: 20px; color: var(--primary); }
+
     /* Contained / filled button */
     .btn-contained {
       display: inline-flex;
@@ -1839,6 +2553,33 @@
     }
     .more-panel.open { display: block; }
 
+    .more-panel-section-label {
+      padding: 10px 16px 4px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+    }
+    .more-panel-columns {
+      display: flex;
+      align-items: flex-start;
+    }
+    .more-panel-column {
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      min-width: 150px;
+    }
+    .more-panel-column + .more-panel-column {
+      border-left: 1px solid var(--border);
+    }
+    .more-panel-column .more-panel-label {
+      overflow: visible;
+      text-overflow: clip;
+      white-space: nowrap;
+    }
+
     .more-panel-item {
       display: flex;
       align-items: center;
@@ -1938,54 +2679,64 @@
       <span class="nav-label">Home</span>
     </div>
 
-    <!-- Strategize -->
-    <div class="nav-section">
-      <div class="section-label">Strategize</div>
-      <div class="nav-item" data-nav-tooltip="Strategy Hub" onclick="setActive(this)">
-        <div class="nav-accent"></div>
-        <span class="ms">hub</span><span class="nav-dot"></span>
-        <span class="nav-label">Strategy Hub</span>
-        <span class="badge">1</span>
-      </div>
-      <div class="nav-item" data-nav-tooltip="Channel Mix" onclick="setActive(this)">
-        <div class="nav-accent"></div>
-        <span class="ms">alt_route</span>
-        <span class="nav-label">Channel Mix</span>
-      </div>
-      <div class="nav-item" data-nav-tooltip="Segment Policies" onclick="setActive(this)">
-        <div class="nav-accent"></div>
-        <span class="ms">policy</span>
-        <span class="nav-label">Segment Policies</span>
-      </div>
-      <div class="nav-item" data-nav-tooltip="Profit Strategy" onclick="setActive(this)">
-        <div class="nav-accent"></div>
-        <span class="ms">trending_up</span>
-        <span class="nav-label">Profit Strategy</span>
-      </div>
+    <!-- Advance (standalone) -->
+    <div class="nav-item" data-nav-tooltip="Advance" onclick="setActive(this)">
+      <div class="nav-accent"></div>
+      <span class="ms">rocket_launch</span>
+      <span class="nav-label">Advance</span>
     </div>
 
-    <!-- Operate -->
+    <!-- Pricing & Strategy -->
     <div class="nav-section">
-      <div class="section-label">Operate</div>
-      <div class="nav-item" data-nav-tooltip="Manage Rates" onclick="setActive(this)">
+      <div class="section-label">Pricing &amp; Strategy</div>
+      <div class="nav-item" data-nav-tooltip="Rates" onclick="setActive(this)">
         <div class="nav-accent"></div>
-        <span class="ms">price_change</span>
-        <span class="nav-label">Manage Rates</span>
+        <span class="ms">sell</span>
+        <span class="nav-label">Rates</span>
       </div>
-      <div class="nav-item" data-nav-tooltip="Groups" onclick="setActive(this)">
+      <div class="nav-item" data-nav-tooltip="Pricing Strategy" onclick="setActive(this)">
         <div class="nav-accent"></div>
-        <span class="ms">groups</span><span class="nav-dot"></span>
-        <span class="nav-label">Groups</span>
-        <span class="badge">1</span>
+        <span class="ms">trending_up</span>
+        <span class="nav-label">Pricing Strategy</span>
       </div>
-      <button class="more-btn" data-more="operate" onclick="toggleMorePanel(this, 'operate')">
-        15 more <span class="ms" style="font-size:18px">chevron_right</span>
+      <div class="nav-item" data-nav-tooltip="Restrictions" onclick="setActive(this)">
+        <div class="nav-accent"></div>
+        <span class="ms">block</span>
+        <span class="nav-label">Restrictions</span>
+      </div>
+      <div class="nav-item" data-nav-tooltip="Restriction Strategy" onclick="setActive(this)">
+        <div class="nav-accent"></div>
+        <span class="ms">policy</span>
+        <span class="nav-label">Restriction Strategy</span>
+      </div>
+      <div class="nav-item" data-nav-tooltip="Autopilot" onclick="setActive(this)">
+        <div class="nav-accent"></div>
+        <span class="ms">auto_mode</span>
+        <span class="nav-label">Autopilot</span>
+      </div>
+      <div class="nav-item" data-nav-tooltip="Min/Max Bounds" onclick="setActive(this)">
+        <div class="nav-accent"></div>
+        <span class="ms">tune</span>
+        <span class="nav-label">Min/Max Bounds</span>
+      </div>
+      <div class="nav-item" data-nav-tooltip="Rate Guidelines" onclick="setActive(this)">
+        <div class="nav-accent"></div>
+        <span class="ms">rule</span>
+        <span class="nav-label">Rate Guidelines</span>
+      </div>
+      <div class="nav-item" data-nav-tooltip="Rate Change Activity" onclick="setActive(this)">
+        <div class="nav-accent"></div>
+        <span class="ms">change_history</span>
+        <span class="nav-label">Rate Change Activity</span>
+      </div>
+      <button class="more-btn" data-more="pricing" onclick="toggleMorePanel(this, 'pricing')">
+        17 more <span class="ms" style="font-size:18px">chevron_right</span>
       </button>
     </div>
 
-    <!-- Plan -->
+    <!-- Forecasts & Budgets -->
     <div class="nav-section">
-      <div class="section-label">Plan</div>
+      <div class="section-label">Forecasts &amp; Budgets</div>
       <div class="nav-item" data-nav-tooltip="Forecast &amp; Budget Builder" onclick="setActive(this)">
         <div class="nav-accent"></div>
         <span class="ms">analytics</span>
@@ -1998,37 +2749,56 @@
       </div>
     </div>
 
-    <!-- Analyze -->
+    <!-- Reports -->
     <div class="nav-section">
-      <div class="section-label">Analyze</div>
+      <div class="section-label">Reports</div>
       <div class="nav-item" data-nav-tooltip="Custom Reports" onclick="setActive(this)">
         <div class="nav-accent"></div>
         <span class="ms">addchart</span>
         <span class="nav-label">Custom Reports</span>
-      </div>
-      <div class="nav-item" data-nav-tooltip="Occupancy" onclick="setActive(this)">
-        <div class="nav-accent"></div>
-        <span class="ms">hotel</span>
-        <span class="nav-label">Occupancy</span>
       </div>
       <div class="nav-item" data-nav-tooltip="Daily Pace" onclick="setActive(this)">
         <div class="nav-accent"></div>
         <span class="ms">today</span>
         <span class="nav-label">Daily Pace</span>
       </div>
-      <button class="more-btn" data-more="analyze" onclick="toggleMorePanel(this, 'analyze')">
-        20 more <span class="ms" style="font-size:18px">chevron_right</span>
+      <div class="nav-item" data-nav-tooltip="Pickup" onclick="setActive(this)">
+        <div class="nav-accent"></div>
+        <span class="ms">download</span>
+        <span class="nav-label">Pickup</span>
+      </div>
+      <div class="nav-item" data-nav-tooltip="Competitor Rate" onclick="setActive(this)">
+        <div class="nav-accent"></div>
+        <span class="ms">compare</span>
+        <span class="nav-label">Competitor Rate</span>
+      </div>
+      <div class="nav-item" data-nav-tooltip="Performance vs. Budget" onclick="setActive(this)">
+        <div class="nav-accent"></div>
+        <span class="ms">savings</span>
+        <span class="nav-label">Performance vs. Budget</span>
+      </div>
+      <button class="more-btn" data-more="reports" onclick="toggleMorePanel(this, 'reports')">
+        18 more <span class="ms" style="font-size:18px">chevron_right</span>
       </button>
     </div>
 
-    <!-- Configure -->
+    <!-- Groups -->
     <div class="nav-section">
-      <div class="section-label">Other</div>
-      <div class="nav-item" data-nav-tooltip="Find My Rate" onclick="setActive(this)">
+      <div class="section-label">Groups</div>
+      <div class="nav-item" data-nav-tooltip="Quotes" onclick="setActive(this)">
         <div class="nav-accent"></div>
-        <span class="ms">manage_search</span>
-        <span class="nav-label">Find My Rate</span>
+        <span class="ms">request_quote</span>
+        <span class="nav-label">Quotes</span>
       </div>
+      <div class="nav-item" data-nav-tooltip="Group Wash" onclick="setActive(this)">
+        <div class="nav-accent"></div>
+        <span class="ms">water</span><span class="nav-dot"></span>
+        <span class="nav-label">Group Wash</span>
+        <span class="badge">1</span>
+      </div>
+      <button class="more-btn" data-more="groups" onclick="toggleMorePanel(this, 'groups')">
+        3 more <span class="ms" style="font-size:18px">chevron_right</span>
+      </button>
     </div>
 
     <!-- Collapsed "..." overflow item — visible only when sidebar is collapsed -->
@@ -2154,13 +2924,142 @@
 
   <!-- ── Right rail ───────────────────────────────────────────────── -->
   <div class="right-rail">
-    <button class="icon-btn-lg" data-tooltip="Metrics Calendar" data-tooltip-pos="left">
-      <span class="ms">calendar_today</span>
-    </button>
     <button class="icon-btn-lg ai-btn" data-tooltip="AI Assistant" data-tooltip-pos="left">
       <span class="ms ms-filled">auto_awesome</span>
       <span class="rail-badge">2</span>
     </button>
+    <button class="icon-btn-lg" id="cal-rail-btn" data-tooltip="Metrics Calendar" data-tooltip-pos="left">
+      <span class="ms">calendar_today</span>
+    </button>
+  </div>
+
+  <!-- ── AI Assistant panel ──────────────────────────────────────── -->
+  <div id="ai-panel" class="ai-panel">
+    <div class="ai-panel-resize" id="ai-panel-resize"></div>
+    <div class="ai-panel-header">
+      <div class="ai-panel-header-left">
+        <button class="ai-chat-back" id="ai-chat-back" aria-label="Back" type="button">
+          <span class="ms">arrow_back</span>
+        </button>
+        <span class="ai-panel-title" id="ai-panel-title">AI Assistant</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:2px;flex-shrink:0;">
+        <button class="ai-panel-pin" id="ai-panel-pin" aria-label="Pin AI Assistant" data-tooltip="Pin panel" data-tooltip-pos="bottom">
+          <span class="ms">push_pin</span>
+        </button>
+        <button class="ai-panel-close" id="ai-panel-close" aria-label="Close AI Assistant">
+          <span class="ms">close</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Home view: top chat input + empty body -->
+    <div class="ai-home-view" id="ai-home-view">
+      <div class="ai-chat-input" id="ai-chat-input">
+        <div class="ai-chat-row">
+          <div class="ai-chat-field-wrap" id="ai-chat-field-wrap">
+            <textarea class="ai-chat-textarea" id="ai-chat-textarea" placeholder="Ask anything" rows="1"></textarea>
+            <button class="ai-suggestions-pill" id="ai-suggestions-pill" type="button">
+              Suggestions
+              <span class="ms">arrow_drop_down</span>
+            </button>
+          </div>
+          <button class="ai-send-btn" id="ai-top-send" aria-label="Send message" type="button" data-tooltip="Send" data-tooltip-pos="bottom-center">
+            <span class="ms">send</span>
+          </button>
+          <button class="ai-history-btn" aria-label="Chat history" type="button" data-tooltip="History" data-tooltip-pos="bottom-center">
+            <span class="ms">history</span>
+          </button>
+        </div>
+        <div class="ai-suggestions-dropdown" id="ai-suggestions-dropdown">
+          <div class="ai-suggestion-item">Help me plan the next 7 days</div>
+          <div class="ai-suggestion-item">Which segments are pacing behind forecast?</div>
+          <div class="ai-suggestion-item">What happens to my forecast if I increase BAR by 5%?</div>
+          <div class="ai-suggestion-item">How did we finish yesterday vs. STLY?</div>
+        </div>
+      </div>
+      <div class="ai-panel-body"></div>
+    </div>
+
+    <!-- Chat view: messages + bottom input -->
+    <div class="ai-chat-view" id="ai-chat-view">
+      <div class="ai-messages" id="ai-messages"></div>
+      <div class="ai-chat-bottom-input">
+        <div class="ai-chat-row">
+          <div class="ai-chat-field-wrap">
+            <textarea class="ai-chat-textarea" id="ai-bottom-textarea" placeholder="Ask anything" rows="1"></textarea>
+          </div>
+          <button class="ai-send-btn ai-send-btn--secondary" id="ai-bottom-send" aria-label="Send message" type="button" data-tooltip="Send" data-tooltip-pos="top">
+            <span class="ms">send</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Metrics Calendar panel ──────────────────────────────────── -->
+  <div id="cal-panel" class="ai-panel">
+    <div class="ai-panel-resize" id="cal-panel-resize"></div>
+    <div class="ai-panel-header">
+      <span class="ai-panel-title">Metrics Calendar</span>
+      <div style="display:flex;align-items:center;gap:2px;">
+        <button class="ai-panel-pin" id="cal-panel-pin" aria-label="Pin Metrics Calendar" data-tooltip="Pin panel" data-tooltip-pos="bottom">
+          <span class="ms">push_pin</span>
+        </button>
+        <button class="ai-panel-close" id="cal-panel-close" aria-label="Close Metrics Calendar">
+          <span class="ms">close</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Calendar body -->
+    <div class="cal-body" id="cal-body">
+      <div class="cal-presets" id="cal-presets">
+        <button class="cal-preset-btn" type="button" onclick="_calPreset(7,   'Next 7 days')">Next 7 days</button>
+        <button class="cal-preset-btn" type="button" onclick="_calPreset(14,  'Next 14 days')">Next 14 days</button>
+        <button class="cal-preset-btn" type="button" onclick="_calPreset(30,  'Next 30 days')">Next 30 days</button>
+        <button class="cal-preset-btn" type="button" onclick="_calPreset(90,  'Next 90 days')">Next 90 days</button>
+        <button class="cal-preset-btn" type="button" onclick="_calPreset(180, 'Next 180 days')">Next 180 days</button>
+      </div>
+      <div class="cal-nav">
+        <div class="cal-nav-arrows">
+          <button class="dp-nav-btn" onclick="_calNav(-12)" data-tooltip="Previous year" data-tooltip-pos="bottom-center"><span class="ms">keyboard_double_arrow_left</span></button>
+          <button class="dp-nav-btn" onclick="_calNav(-1)"  data-tooltip="Previous month" data-tooltip-pos="bottom-center"><span class="ms">chevron_left</span></button>
+        </div>
+        <span class="dp-month-label" id="cal-month-label"></span>
+        <div class="cal-nav-arrows">
+          <button class="dp-nav-btn" onclick="_calNav(1)"   data-tooltip="Next month" data-tooltip-pos="bottom-center"><span class="ms">chevron_right</span></button>
+          <button class="dp-nav-btn" onclick="_calNav(12)"  data-tooltip="Next year" data-tooltip-pos="bottom-center"><span class="ms">keyboard_double_arrow_right</span></button>
+        </div>
+      </div>
+      <div class="dp-weekdays">
+        <div class="dp-wd">Su</div><div class="dp-wd">Mo</div><div class="dp-wd">Tu</div>
+        <div class="dp-wd">We</div><div class="dp-wd">Th</div><div class="dp-wd">Fr</div>
+        <div class="dp-wd">Sa</div>
+      </div>
+      <div class="cal-grid" id="cal-days" onmouseleave="_calHoverClear()"></div>
+      <div class="cal-hint" id="cal-hint"></div>
+      <div class="cal-legend">
+        <button class="cal-legend-item" id="cal-leg-event"    type="button" onclick="_calToggle('event')">
+          <span class="cal-ind cal-leg-icon cal-ind-event"></span>Events
+        </button>
+        <button class="cal-legend-item" id="cal-leg-note"     type="button" onclick="_calToggle('note')">
+          <span class="cal-ind cal-leg-icon cal-ind-note"></span>Notes
+        </button>
+        <button class="cal-legend-item" id="cal-leg-restrict" type="button" onclick="_calToggle('restrict')">
+          <span class="cal-ind cal-leg-icon cal-ind-restrict"></span>Restrictions
+        </button>
+        <button class="cal-legend-item" id="cal-leg-insight"  type="button" onclick="_calToggle('insight')">
+          <span class="cal-ind cal-leg-icon cal-ind-insight"></span>AI Insights
+        </button>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="cal-footer">
+      <button class="btn-text"      id="cal-cancel-btn" type="button" onclick="_calCancel()" disabled>Cancel</button>
+      <button class="btn-contained" id="cal-apply-btn"  type="button" onclick="_calApply()"  disabled>Apply</button>
+    </div>
   </div>
 
   <!-- Floating "more" panel -->
@@ -2172,46 +3071,78 @@
   <script>
     /* ── "More" panel data ───────────────────────────────────────── */
     const MORE_ITEMS = {
-      operate: [
-        { icon: 'request_quote',      label: 'Quotes' },
-        { icon: 'water',              label: 'Group Wash',              badge: 1 },
-        { icon: 'swap_horiz',         label: 'Alternate Properties' },
-        { icon: 'tune',               label: 'Group Settings' },
-        { icon: 'king_bed',           label: 'Default Room Type Rates' },
-        { icon: 'block',              label: 'Product Level Restrictions' },
-        { icon: 'warning',            label: 'Overbooking',             badge: 3 },
-        { icon: 'construction',       label: 'Out of Order Rooms' },
-        { icon: 'event',              label: 'Events',                  badge: 1 },
-        { icon: 'corporate_fare',     label: 'Enterprise Hotel Groups' },
-        { icon: 'account_tree',       label: 'Subrates' },
-        { icon: 'change_history',     label: 'Rate Change Activity' },
-        { icon: 'history',            label: 'Restriction Change Activity' },
-        { icon: 'visibility',         label: 'Pricing Visibility' },
-        { icon: 'policy',             label: 'Rate Guidelines' },
-      ],
-      analyze: [
-        { icon: 'dashboard',          label: 'Dashboards',              badge: 2 },
-        { icon: 'speed',              label: 'Pace' },
-        { icon: 'stacked_line_chart', label: 'Yielding Overview' },
-        { icon: 'sell',               label: 'Sellout' },
-        { icon: 'bar_chart',          label: 'Rate Analysis' },
-        { icon: 'king_bed',           label: 'Room Type Analysis' },
-        { icon: 'show_chart',         label: 'Daily Booking Curve' },
-        { icon: 'area_chart',         label: 'Cumulative Booking Curve' },
-        { icon: 'trending_up',        label: 'Average Booking Curve' },
-        { icon: 'compare',            label: 'Competitor Rate' },
-        { icon: 'swap_vert',          label: 'Competitor Rate Change' },
-        { icon: 'balance',            label: 'Rate Similarity Comparison' },
-        { icon: 'account_balance',    label: 'Financial Forecast' },
-        { icon: 'savings',            label: 'Performance vs Budget' },
-        { icon: 'category',           label: 'Market Segment & Room Type' },
-        { icon: 'settings_suggest',   label: 'Operations' },
-        { icon: 'leaderboard',        label: 'Hotel Performance' },
-        { icon: 'monitoring',         label: 'Hotel Performance Chart' },
-        { icon: 'language',           label: 'Website Activity' },
-        { icon: 'trending_down',      label: 'Lost Business',           badge: 1 },
-      ],
+      pricing: { sections: [
+        { label: 'Manage', items: [
+          { icon: 'schedule',           label: 'Rates (7 day view)' },
+          { icon: 'stacked_line_chart', label: 'Yielding' },
+          { icon: 'king_bed',           label: 'Room Type Rates' },
+          { icon: 'king_bed',           label: 'Default Room Type Rates' },
+          { icon: 'block',              label: 'Product Level Restrictions' },
+          { icon: 'warning',            label: 'Overbooking',             badge: 3 },
+          { icon: 'construction',       label: 'Out of Order Rooms' },
+          { icon: 'event',              label: 'Events',                  badge: 1 },
+        ]},
+        { label: 'Configure', items: [
+          { icon: 'tune',               label: 'Room Type Pricing Strategy' },
+          { icon: 'rule',               label: 'Forecast Rules' },
+          { icon: 'account_tree',       label: 'Sub Rates' },
+          { icon: 'hub',                label: 'Clusters' },
+        ]},
+        { label: 'Multi-property', items: [
+          { icon: 'account_tree',       label: 'Sub Rates' },
+          { icon: 'corporate_fare',     label: 'Hotel Groups' },
+        ]},
+        { label: 'Review', items: [
+          { icon: 'unpublished',        label: 'Unpublished Rates' },
+          { icon: 'history',            label: 'Restriction Change Activity' },
+          { icon: 'visibility',         label: 'Pricing Visibility' },
+        ]},
+      ]},
+      reports: { sections: [
+        { label: 'Performance', items: [
+          { icon: 'stacked_line_chart', label: 'Yielding Overview' },
+          { icon: 'hotel',              label: 'Occupancy' },
+          { icon: 'sell',               label: 'Sellout' },
+          { icon: 'bar_chart',          label: 'Rate Analysis' },
+          { icon: 'king_bed',           label: 'Room Type Analysis' },
+          { icon: 'compare_arrows',     label: 'Comp vs. Cash' },
+        ]},
+        { label: 'Booking Curves', items: [
+          { icon: 'show_chart',         label: 'Daily Booking Curve' },
+          { icon: 'area_chart',         label: 'Cumulative Booking Curve' },
+          { icon: 'trending_up',        label: 'Average Booking Curve' },
+        ]},
+        { label: 'Market', items: [
+          { icon: 'swap_vert',          label: 'Competitor Rate Change' },
+          { icon: 'balance',            label: 'Rate Similarity Comparison' },
+        ]},
+        { label: 'Operations', items: [
+          { icon: 'account_balance',    label: 'Financial Forecast' },
+          { icon: 'category',           label: 'Market Segment & Room Type' },
+          { icon: 'settings_suggest',   label: 'Operations' },
+          { icon: 'leaderboard',        label: 'Hotel Performance' },
+          { icon: 'monitoring',         label: 'Hotel Performance Chart' },
+        ]},
+        { label: 'Website', items: [
+          { icon: 'language',           label: 'Website Activity' },
+          { icon: 'trending_down',      label: 'Lost Business',           badge: 1 },
+        ]},
+      ]},
+      groups: { sections: [
+        { label: null, items: [
+          { icon: 'meeting_room',       label: 'Event Space' },
+          { icon: 'tune',               label: 'Group Settings' },
+          { icon: 'swap_horiz',         label: 'Alternate Properties' },
+        ]},
+      ]},
     };
+
+    function getMoreItemsFlat(key) {
+      const val = MORE_ITEMS[key];
+      if (!val) return [];
+      if (Array.isArray(val)) return val;
+      return val.sections.flatMap(s => s.items);
+    }
 
     /* ── More panel logic ────────────────────────────────────────── */
     const morePanel  = document.getElementById('more-panel');
@@ -2220,7 +3151,7 @@
     // Inject red dot on more-btns whose section has any badged items
     document.querySelectorAll('.more-btn[data-more]').forEach(btn => {
       const key = btn.dataset.more;
-      if (MORE_ITEMS[key] && MORE_ITEMS[key].some(item => item.badge)) {
+      if (getMoreItemsFlat(key).some(item => item.badge)) {
         const dot = document.createElement('span');
         dot.className = 'more-btn-dot';
         // Insert before the chevron icon (last child)
@@ -2232,29 +3163,54 @@
       if (activeMoreBtn === btn) { closeMorePanel(); return; }
       activeMoreBtn = btn;
 
-      // Build items
-      morePanel.innerHTML = MORE_ITEMS[key].map(({ icon, label, badge }) => `
+      // Build items — multi-section with labels renders as columns, otherwise flat
+      const val = MORE_ITEMS[key];
+      const sections = Array.isArray(val) ? [{ label: null, items: val }] : val.sections;
+      const useColumns = sections.length > 1 && sections.some(s => s.label);
+
+      const itemHtml = ({ icon, label, badge }) => `
         <div class="more-panel-item" onclick="selectMoreItem(this, '${label.replace(/'/g,"\\'")}')">
           <span class="ms">${icon}</span>
           <span class="more-panel-label">${label}</span>
           ${badge ? `<span class="more-panel-badge">${badge}</span>` : ''}
-        </div>`).join('');
+        </div>`;
+
+      if (useColumns) {
+        morePanel.innerHTML = `<div class="more-panel-columns">${
+          sections.map(({ label: sLabel, items }) =>
+            `<div class="more-panel-column">` +
+            (sLabel ? `<div class="more-panel-section-label">${sLabel}</div>` : '') +
+            items.map(itemHtml).join('') +
+            `</div>`
+          ).join('')
+        }</div>`;
+      } else {
+        morePanel.innerHTML = sections.map(({ label: sLabel, items }) =>
+          (sLabel ? `<div class="more-panel-section-label">${sLabel}</div>` : '') +
+          items.map(itemHtml).join('')
+        ).join('');
+      }
 
       // Position: right of sidebar, vertically near the button
       const sidebar  = document.querySelector('.sidebar');
       const btnRect  = btn.getBoundingClientRect();
       const sideRect = sidebar.getBoundingClientRect();
-      morePanel.classList.add('open');
 
       const gap = 8;
       let top = btnRect.top;
       morePanel.style.left = (sideRect.right + gap) + 'px';
       morePanel.style.top  = top + 'px';
+      morePanel.classList.add('open');
 
       // Keep within viewport vertically
       const ph = morePanel.offsetHeight;
       if (top + ph > window.innerHeight - 16)
         morePanel.style.top = Math.max(8, window.innerHeight - ph - 16) + 'px';
+
+      // Keep within viewport horizontally
+      const pw = morePanel.offsetWidth;
+      if (sideRect.right + gap + pw > window.innerWidth - 8)
+        morePanel.style.left = Math.max(8, window.innerWidth - pw - 8) + 'px';
     }
 
     function closeMorePanel() {
@@ -2272,12 +3228,13 @@
 
       // Build combined list with section headers
       const sections = [
-        { key: 'operate', label: 'Operate' },
-        { key: 'analyze', label: 'Analyze' },
+        { key: 'pricing', label: 'Pricing & Strategy' },
+        { key: 'reports', label: 'Reports' },
+        { key: 'groups',  label: 'Groups' },
       ];
       collapsedMorePanel.innerHTML = sections.map(({ key, label }) =>
         `<div class="collapsed-more-section-label">${label}</div>` +
-        MORE_ITEMS[key].map(({ icon, label: l, badge }) =>
+        getMoreItemsFlat(key).map(({ icon, label: l, badge }) =>
           `<div class="more-panel-item" onclick="selectMoreItem(this,'${l.replace(/'/g,"\\'")}'); closeCollapsedMorePanel();">
             <span class="ms">${icon}</span>
             <span class="more-panel-label">${l}</span>
@@ -2308,7 +3265,7 @@
 
     // Add badge dot if any hidden items have badges
     (function() {
-      const hasBadge = ['operate','analyze'].some(k => MORE_ITEMS[k].some(i => i.badge));
+      const hasBadge = ['pricing','reports','groups'].some(k => getMoreItemsFlat(k).some(i => i.badge));
       if (hasBadge) {
         const dot = document.createElement('span');
         dot.className = 'nav-more-dot-badge';
@@ -2388,12 +3345,13 @@
 
       // Remove badge from MORE_ITEMS data and update any more-btn dots
       for (const key of Object.keys(MORE_ITEMS)) {
-        const item = MORE_ITEMS[key].find(i => i.label === label);
+        const items = getMoreItemsFlat(key);
+        const item = items.find(i => i.label === label);
         if (item && item.badge) {
           delete item.badge;
           // Remove dot from the corresponding more-btn if no badged items remain
           const btn = document.querySelector(`.more-btn[data-more="${key}"]`);
-          if (btn && !MORE_ITEMS[key].some(i => i.badge)) {
+          if (btn && !getMoreItemsFlat(key).some(i => i.badge)) {
             const dot = btn.querySelector('.more-btn-dot');
             if (dot) dot.remove();
           }
@@ -2413,8 +3371,8 @@
     function selectMoreItem(el, label) {
       // Find the item data
       let foundKey = null, foundItem = null;
-      for (const [key, items] of Object.entries(MORE_ITEMS)) {
-        const item = items.find(i => i.label === label);
+      for (const key of Object.keys(MORE_ITEMS)) {
+        const item = getMoreItemsFlat(key).find(i => i.label === label);
         if (item) { foundKey = key; foundItem = item; break; }
       }
 
@@ -2943,20 +3901,13 @@
     // Init display label from default committed state
     document.getElementById('date-select-value').textContent = _dpCommitted.preset || _formatRange(_dpCommitted.start, _dpCommitted.end);
 
-    // Wire toggle — stopPropagation so document outside-click doesn't immediately close
+    // Stay date input opens the Metrics Calendar side panel
+    document.getElementById('date-select-wrap').addEventListener('mousedown', e => {
+      e.stopPropagation(); // prevent panel outside-click listener from firing first
+    });
     document.getElementById('date-select-wrap').addEventListener('click', e => {
       e.stopPropagation();
-      toggleDatePicker();
-    });
-
-    // Clicks inside the dropdown stay inside
-    document.getElementById('date-picker-dropdown').addEventListener('click', e => e.stopPropagation());
-
-    // Close on outside click
-    document.addEventListener('click', e => {
-      const dd = document.getElementById('date-picker-dropdown');
-      if (!dd.classList.contains('open')) return;
-      if (!dd.contains(e.target)) closeDatePicker(false);
+      document.getElementById('cal-rail-btn').click();
     });
 
     function getPropertyName() {
@@ -4091,6 +5042,479 @@
       cleanup(a);
       cleanup(b);
     }
+
+    /* ── Side panels (shared factory) ───────────────────────────── */
+    (function () {
+      const themeBtn = document.getElementById('theme-btn');
+      const controllers = [];
+
+      function makePanel(panelEl, railBtn, closeBtnEl, pinBtnEl, resizeEl) {
+        let isOpen = false, isPinned = false;
+
+        const pinBadge = document.createElement('span');
+        pinBadge.className = 'ai-btn-pin-badge';
+        pinBadge.innerHTML = '<span class="ms ms-filled">push_pin</span>';
+        pinBadge.style.display = 'none';
+        railBtn.appendChild(pinBadge);
+
+        const ctrl = { panelEl, railBtn, isOpen: () => isOpen, isPinned: () => isPinned, close: null };
+
+        function openPanel() {
+          controllers.forEach(c => { if (c !== ctrl && c.isOpen() && !c.isPinned()) c.close(); });
+          panelEl.classList.add('open');
+          railBtn.classList.add('ai-btn--active');
+          isOpen = true;
+        }
+
+        function closePanel() {
+          panelEl.classList.remove('open');
+          railBtn.classList.remove('ai-btn--active');
+          isOpen = false;
+        }
+
+        function pinPanel() {
+          isPinned = true;
+          panelEl.classList.add('pinned');
+          pinBtnEl.classList.add('is-pinned');
+          pinBtnEl.setAttribute('data-tooltip', 'Unpin panel');
+          pinBtnEl.querySelector('.ms').classList.add('ms-filled');
+          railBtn.classList.remove('ai-btn--active');
+          railBtn.classList.add('ai-btn--muted');
+          pinBadge.style.display = 'flex';
+        }
+
+        function unpinPanel() {
+          isPinned = false;
+          pinBtnEl.classList.remove('is-pinned');
+          pinBtnEl.setAttribute('data-tooltip', 'Pin panel');
+          pinBtnEl.querySelector('.ms').classList.remove('ms-filled');
+          railBtn.classList.remove('ai-btn--muted');
+          pinBadge.style.display = 'none';
+          panelEl.classList.remove('pinned');
+          closePanel();
+        }
+
+        function flashPanel() {
+          panelEl.classList.remove('flash');
+          panelEl.getBoundingClientRect();
+          panelEl.classList.add('flash');
+          panelEl.addEventListener('animationend', () => panelEl.classList.remove('flash'), { once: true });
+        }
+
+        railBtn.addEventListener('click', () => {
+          if (isPinned) { flashPanel(); return; }
+          isOpen ? closePanel() : openPanel();
+        });
+        closeBtnEl.addEventListener('click', closePanel);
+        pinBtnEl.addEventListener('click', () => isPinned ? unpinPanel() : pinPanel());
+
+        resizeEl.addEventListener('mousedown', e => {
+          e.preventDefault();
+          const startX = e.clientX, startW = panelEl.offsetWidth;
+          resizeEl.classList.add('dragging');
+          document.body.style.cursor = 'ew-resize';
+          document.body.style.userSelect = 'none';
+          const onMove = e => { panelEl.style.width = Math.min(600, Math.max(280, startW + (startX - e.clientX))) + 'px'; };
+          const onUp = () => {
+            resizeEl.classList.remove('dragging');
+            document.body.style.cursor = '';
+            document.body.style.userSelect = '';
+            document.removeEventListener('mousemove', onMove);
+            document.removeEventListener('mouseup', onUp);
+          };
+          document.addEventListener('mousemove', onMove);
+          document.addEventListener('mouseup', onUp);
+        });
+
+        ctrl.close = closePanel;
+        controllers.push(ctrl);
+        return ctrl;
+      }
+
+      makePanel(
+        document.getElementById('ai-panel'),
+        document.querySelector('.ai-btn'),
+        document.getElementById('ai-panel-close'),
+        document.getElementById('ai-panel-pin'),
+        document.getElementById('ai-panel-resize')
+      );
+
+      window._calPanelCtrl = makePanel(
+        document.getElementById('cal-panel'),
+        document.getElementById('cal-rail-btn'),
+        document.getElementById('cal-panel-close'),
+        document.getElementById('cal-panel-pin'),
+        document.getElementById('cal-panel-resize')
+      );
+
+      /* Close open (unpinned) panels on outside click.
+         Use composedPath() so the check survives DOM mutations (e.g. innerHTML
+         re-renders that detach e.target before this handler fires). */
+      document.addEventListener('mousedown', e => {
+        if (themeBtn && themeBtn.contains(e.target)) return;
+        const path = e.composedPath ? e.composedPath() : [];
+        controllers.forEach(ctrl => {
+          if (!ctrl.isOpen() || ctrl.isPinned()) return;
+          if (path.includes(ctrl.panelEl) || path.includes(ctrl.railBtn)) return;
+          if (ctrl.panelEl.contains(e.target) || ctrl.railBtn.contains(e.target)) return;
+          ctrl.close();
+        });
+      });
+    })();
+
+    /* ── AI chat input wiring ──────────────────────────────────────── */
+    (function() {
+      const pill     = document.getElementById('ai-suggestions-pill');
+      const dropdown = document.getElementById('ai-suggestions-dropdown');
+      const textarea = document.getElementById('ai-chat-textarea');
+      function openDropdown() {
+        dropdown.classList.add('open');
+        pill.classList.add('open');
+      }
+      function closeDropdown() {
+        dropdown.classList.remove('open');
+        pill.classList.remove('open');
+      }
+
+      pill.addEventListener('click', e => {
+        e.stopPropagation();
+        dropdown.classList.contains('open') ? closeDropdown() : openDropdown();
+      });
+
+      dropdown.querySelectorAll('.ai-suggestion-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const q = item.textContent.trim();
+          closeDropdown();
+          if (window.aiStartChat) {
+            window.aiStartChat(q);
+          } else {
+            textarea.value = q;
+            autoResize(textarea);
+            textarea.focus();
+          }
+        });
+      });
+
+      document.addEventListener('mousedown', e => {
+        if (!dropdown.classList.contains('open')) return;
+        if (pill.contains(e.target) || dropdown.contains(e.target)) return;
+        closeDropdown();
+      });
+
+      function autoResize(el) {
+        el.style.height = 'auto';
+        el.style.height = Math.min(el.scrollHeight, 96) + 'px';
+      }
+      textarea.addEventListener('input', () => autoResize(textarea));
+    })();
+
+    /* ── AI chat simulation ────────────────────────────────────────── */
+    (function() {
+      const panel       = document.getElementById('ai-panel');
+      const titleEl     = document.getElementById('ai-panel-title');
+      const backBtn     = document.getElementById('ai-chat-back');
+      const messagesEl  = document.getElementById('ai-messages');
+      const topTextarea = document.getElementById('ai-chat-textarea');
+      const topSend     = document.getElementById('ai-top-send');
+      const botTextarea = document.getElementById('ai-bottom-textarea');
+      const botSend     = document.getElementById('ai-bottom-send');
+
+      function autoResize(el) {
+        el.style.height = 'auto';
+        el.style.height = Math.min(el.scrollHeight, 96) + 'px';
+      }
+      botTextarea.addEventListener('input', () => autoResize(botTextarea));
+
+      function enterChat(query) {
+        panel.classList.add('chat-mode');
+        const short = query.length > 36 ? query.slice(0, 36) + '…' : query;
+        titleEl.textContent = short;
+
+        messagesEl.innerHTML = '';
+
+        const userBubble = document.createElement('div');
+        userBubble.className = 'ai-msg-user';
+        userBubble.textContent = query;
+        messagesEl.appendChild(userBubble);
+
+        const loadBubble = document.createElement('div');
+        loadBubble.className = 'ai-msg-loading';
+        loadBubble.innerHTML = '<div class="ai-spinner"></div><span>Thinking…</span>';
+        messagesEl.appendChild(loadBubble);
+
+        setTimeout(() => {
+          loadBubble.remove();
+
+          const aiMsg = document.createElement('div');
+          aiMsg.className = 'ai-msg-ai';
+          aiMsg.innerHTML =
+            '<p>I’ve reviewed your question against the current data for <strong>Hotel Barcelona</strong>.</p>' +
+            '<p>Based on your pickup trends, pacing, and competitive positioning, here are the key insights and recommended next steps:</p>' +
+            '<div class="ai-action-card">' +
+              '<div class="ai-action-card-title">Recommended Action(s):</div>' +
+              '<ul class="ai-action-list">' +
+                '<li>Review your rate strategy for the next 7 days against current comp set positioning</li>' +
+                '<li>Check pickup pace on compression dates and adjust BAR accordingly</li>' +
+                '<li>Monitor channel mix and adjust distribution to optimise revenue</li>' +
+              '</ul>' +
+              '<button class="ai-action-apply-btn" type="button"><span class="ms">check</span> Review &amp; Apply</button>' +
+            '</div>';
+          messagesEl.appendChild(aiMsg);
+          messagesEl.scrollTop = messagesEl.scrollHeight;
+        }, 1600);
+      }
+
+      function goHome() {
+        panel.classList.remove('chat-mode');
+        titleEl.textContent = 'AI Assistant';
+        topTextarea.value = '';
+        topTextarea.style.height = '';
+        botTextarea.value = '';
+        botTextarea.style.height = '';
+      }
+
+      window.aiStartChat = enterChat;
+
+      topSend.addEventListener('click', () => {
+        const q = topTextarea.value.trim();
+        if (q) enterChat(q);
+      });
+      topTextarea.addEventListener('keydown', e => {
+        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); const q = topTextarea.value.trim(); if (q) enterChat(q); }
+      });
+
+      botSend.addEventListener('click', () => {
+        const q = botTextarea.value.trim();
+        if (q) { botTextarea.value = ''; botTextarea.style.height = ''; enterChat(q); }
+      });
+      botTextarea.addEventListener('keydown', e => {
+        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); const q = botTextarea.value.trim(); if (q) { botTextarea.value = ''; botTextarea.style.height = ''; enterChat(q); } }
+      });
+
+      backBtn.addEventListener('click', goHome);
+    })();
+
+    /* ── Metrics Calendar ──────────────────────────────────────────── */
+    (function() {
+      const CAL_MONTHS = ['January','February','March','April','May','June',
+                          'July','August','September','October','November','December'];
+
+      let _calViewYear  = _dpCommitted.start.getFullYear();
+      let _calViewMonth = _dpCommitted.start.getMonth();
+      let _calWork      = null; // null = committed shown; { start, end } = pending change
+      // _calWork.end === null means user clicked start, awaiting end click
+
+      function setFooterState(hasChange) {
+        const applyBtn  = document.getElementById('cal-apply-btn');
+        const cancelBtn = document.getElementById('cal-cancel-btn');
+        if (!applyBtn) return;
+        applyBtn.disabled  = !hasChange;
+        cancelBtn.disabled = !hasChange;
+      }
+
+      // Deterministic fake occupancy % for a given date
+      function _calMetric(date) {
+        const dow  = date.getDay();
+        const seed = date.getFullYear() * 10000 + (date.getMonth() + 1) * 100 + date.getDate();
+        const base = (dow === 0 || dow === 6) ? 68 : 58;
+        return base + (seed * 37 + seed % 13) % 32;
+      }
+
+      // Deterministic indicator presence for each type
+      function _calInds(date) {
+        const d = date.getDate(), m = date.getMonth() + 1, y = date.getFullYear();
+        // Force all 4 on ~2 days per month for sampling purposes
+        if ((y * 7 + m * 3 + d) % 12 === 0) return { event: true, note: true, restrict: true, insight: true };
+        return {
+          event:    (y * 7  + m * 13 + d * 31) % 100 < 18,
+          note:     (y * 11 + m * 17 + d * 23) % 100 < 22,
+          restrict: (y * 3  + m * 7  + d * 11) % 100 < 78,
+          insight:  (y * 5  + m * 19 + d * 41) % 100 < 10,
+        };
+      }
+
+      // Hover state for range preview (set while awaiting end-date click)
+      let _calHover = null;
+
+      function updateRangeClasses() {
+        const cells = document.querySelectorAll('#cal-days .cal-cell[data-iso]');
+        let rStart = _calWork ? _calWork.start : _dpCommitted.start;
+        let rEnd   = _calWork
+          ? (_calWork.end || (_calWork.start && _calHover ? _calHover : null))
+          : _dpCommitted.end;
+        if (rStart && rEnd && rEnd < rStart) { const t = rStart; rStart = rEnd; rEnd = t; }
+        cells.forEach(cell => {
+          const d = new Date(cell.dataset.iso + 'T00:00:00');
+          const isStart = rStart && _sameDay(d, rStart);
+          const isEnd   = rEnd   && _sameDay(d, rEnd);
+          const inRange = rStart && rEnd && d > rStart && d < rEnd;
+          cell.classList.remove('cal-start', 'cal-end', 'cal-in-range');
+          if      (isStart && isEnd) cell.classList.add('cal-start', 'cal-end');
+          else if (isStart)          cell.classList.add('cal-start');
+          else if (isEnd)            cell.classList.add('cal-end');
+          else if (inRange)          cell.classList.add('cal-in-range');
+        });
+      }
+
+      window._calHoverDay = function(iso) {
+        if (!_calWork || !_calWork.start || _calWork.end) { _calHover = null; return; }
+        _calHover = new Date(iso + 'T00:00:00');
+        updateRangeClasses();
+      };
+
+      window._calHoverClear = function() {
+        _calHover = null;
+        if (_calWork && _calWork.start && !_calWork.end) updateRangeClasses();
+      };
+
+      // Legend toggle state
+      const _calToggles = { event: true, note: true, restrict: true, insight: true };
+      window._calToggle = function(type) {
+        _calToggles[type] = !_calToggles[type];
+        const body = document.getElementById('cal-body');
+        const btn  = document.getElementById('cal-leg-' + type);
+        if (body) body.classList.toggle('cal-hide-' + type, !_calToggles[type]);
+        if (btn)  btn.classList.toggle('off', !_calToggles[type]);
+      };
+
+      function renderCal() {
+        const label = document.getElementById('cal-month-label');
+        const grid  = document.getElementById('cal-days');
+        const hint  = document.getElementById('cal-hint');
+        if (!label || !grid) return;
+
+        label.textContent = `${CAL_MONTHS[_calViewMonth]} ${_calViewYear}`;
+
+        if (hint) {
+          hint.textContent = (_calWork && _calWork.start && !_calWork.end)
+            ? 'Now click an end date' : '';
+        }
+
+        const year        = _calViewYear;
+        const month       = _calViewMonth;
+        const first       = new Date(year, month, 1);
+        const startDow    = first.getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const prevDays    = new Date(year, month, 0).getDate();
+
+        let html = '';
+        // Leading filler
+        for (let i = startDow - 1; i >= 0; i--) {
+          const d2 = new Date(year, month - 1, prevDays - i);
+          html += `<div class="cal-cell cal-other">
+            <div class="cal-cell-circle">${prevDays - i}</div>
+            <div class="cal-cell-indicators"></div>
+            <div class="cal-cell-metric">${_calMetric(d2)}%</div>
+          </div>`;
+        }
+        // Current month days
+        for (let d = 1; d <= daysInMonth; d++) {
+          const date    = new Date(year, month, d);
+          const iso     = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+          const isToday = _sameDay(date, _today);
+          const metric  = _calMetric(date);
+          const inds    = _calInds(date);
+
+          // Range classes are applied by updateRangeClasses() after innerHTML is set
+          let cls = 'cal-cell';
+          if (isToday) cls += ' cal-today';
+
+          const indHtml = (inds.event    ? '<span class="cal-ind cal-ind-event"></span>'    : '') +
+                          (inds.note     ? '<span class="cal-ind cal-ind-note"></span>'     : '') +
+                          (inds.restrict ? '<span class="cal-ind cal-ind-restrict"></span>' : '') +
+                          (inds.insight  ? '<span class="cal-ind cal-ind-insight"></span>'  : '');
+
+          html += `<div class="${cls}" data-iso="${iso}" onmousedown="_calClickDay('${iso}')" onmouseenter="_calHoverDay('${iso}')">
+            <div class="cal-cell-circle">${d}</div>
+            <div class="cal-cell-indicators">${indHtml}</div>
+            <div class="cal-cell-metric">${metric}%</div>
+          </div>`;
+        }
+        // Trailing filler
+        const total    = startDow + daysInMonth;
+        const trailing = total % 7 === 0 ? 0 : 7 - (total % 7);
+        for (let i = 1; i <= trailing; i++) {
+          const d2 = new Date(year, month + 1, i);
+          html += `<div class="cal-cell cal-other">
+            <div class="cal-cell-circle">${i}</div>
+            <div class="cal-cell-indicators"></div>
+            <div class="cal-cell-metric">${_calMetric(d2)}%</div>
+          </div>`;
+        }
+        grid.innerHTML = html;
+        updateRangeClasses();
+
+        const hasChange = _calWork !== null && _calWork.start && _calWork.end;
+        setFooterState(hasChange);
+
+        // Highlight active preset chip
+        const activeLabel = (_calWork && _calWork.preset) || (!_calWork ? _dpCommitted.preset : null);
+        document.querySelectorAll('#cal-presets .cal-preset-btn').forEach(btn => {
+          btn.classList.toggle('active', btn.textContent.trim() === activeLabel);
+        });
+      }
+
+      window._calNav = function(dir) {
+        _calViewMonth += dir;
+        while (_calViewMonth > 11) { _calViewMonth -= 12; _calViewYear++; }
+        while (_calViewMonth < 0)  { _calViewMonth += 12; _calViewYear--; }
+        renderCal();
+      };
+
+      window._calClickDay = function(iso) {
+        const d = new Date(iso + 'T00:00:00');
+        if (!_calWork || (_calWork.start && _calWork.end)) {
+          // Start a fresh selection
+          _calWork = { start: d, end: null };
+        } else {
+          // Complete the selection
+          _calWork.end = d;
+          if (_calWork.end < _calWork.start) {
+            const t = _calWork.start; _calWork.start = _calWork.end; _calWork.end = t;
+          }
+        }
+        renderCal();
+      };
+
+      window._calPreset = function(days, label) {
+        _calWork = { start: new Date(_today), end: _addDays(_today, days - 1), preset: label };
+        _calViewYear  = _today.getFullYear();
+        _calViewMonth = _today.getMonth();
+        renderCal();
+      };
+
+      window._calApply = function() {
+        if (!_calWork || !_calWork.start || !_calWork.end) return;
+        _dpCommitted.start  = _calWork.start;
+        _dpCommitted.end    = _calWork.end;
+        _dpCommitted.preset = _calWork.preset || null;
+        const label = _dpCommitted.preset || _formatRange(_dpCommitted.start, _dpCommitted.end);
+        document.getElementById('date-select-value').textContent = label;
+        _calWork = null;
+        renderCal();
+        if (window._calPanelCtrl && !window._calPanelCtrl.isPinned()) {
+          window._calPanelCtrl.close();
+        }
+      };
+
+      window._calCancel = function() {
+        _calWork = null;
+        _calViewYear  = _dpCommitted.start.getFullYear();
+        _calViewMonth = _dpCommitted.start.getMonth();
+        renderCal();
+      };
+
+      // Re-sync when the panel opens (reset any in-progress selection)
+      document.getElementById('cal-rail-btn').addEventListener('click', () => {
+        _calWork      = null;
+        _calViewYear  = _dpCommitted.start.getFullYear();
+        _calViewMonth = _dpCommitted.start.getMonth();
+        setTimeout(renderCal, 20);
+      });
+
+      // Initial render (handles pinned state or page load)
+      renderCal();
+    })();
 
     // Init: set Home title to property name, hide page actions, show tabs
     document.querySelector('.page-title').textContent = getPropertyName();
